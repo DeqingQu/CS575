@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define NUMT             1
+#define NUMT             4
 //#define NUMNODES        10000
 #define NUMTRIES        5    // you decide
 
@@ -100,17 +100,17 @@ void run_with_number_nodes(int number_nodes) {
         
         sum = 0.;
         double time0 = omp_get_wtime( );
-        
-        #pragma omp parallel for default(none), shared(fullTileArea, number_nodes) reduction(+:sum)
+        double end = number_nodes-1;
+        #pragma omp parallel for default(none), shared(fullTileArea, number_nodes, end), reduction(+:sum)
         for( int i = 0; i <= number_nodes*number_nodes; i++ )
         {
             int iu = i % number_nodes;
             int iv = i / number_nodes;
             
-            double w = 1;
-            if ((iu == 0 and iv == 0) or (iu == 0 and iv == number_nodes-1) or (iu == number_nodes-1 and iv == 0) or (iu == number_nodes-1 and iv == number_nodes-1))
+            double w = 1.;
+            if ((iu == 0 && iv == 0) || (iu == 0 && iv == end) || (iu == end && iv == 0) || (iu == end && iv == end))
                 w = 0.25;
-            else if (iu == 0 or iu == number_nodes-1 or iv == 0 or iv == number_nodes-1)
+            else if (iu == 0 || iu == end || iv == 0 || iv == end)
                 w = 0.5;
             sum += Height(iu, iv, number_nodes) * w * fullTileArea;
         }
@@ -137,7 +137,7 @@ int main( int argc, char *argv[ ] )
     omp_set_num_threads( NUMT );
     fprintf( stderr, "Using %d threads\n", NUMT );
     
-    for (int num=200; num <= 4000; num+=200) {
+    for (int num=200; num <= 3000; num+=200) {
         run_with_number_nodes(num);
     }
     
