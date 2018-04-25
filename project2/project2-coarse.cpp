@@ -9,7 +9,6 @@ const double EARTH_MASS           = 5.9742e24;     // kg
 const double EARTH_DIAMETER       = 12756000.32;   // meters
 const double TIMESTEP             =   1.0; // secs
 
-#define NUMTHREADS      4
 #define NUMBODIES       500
 #define NUMSTEPS        200
 
@@ -39,9 +38,10 @@ int main( int argc, char *argv[ ] )
     return 1;
 #endif
     
-    omp_set_num_threads(NUMTHREADS);
+    int number_threads = atoi(argv[1]);
+    omp_set_num_threads(number_threads);
     int numProcessors = omp_get_num_procs( );
-    fprintf( stderr, "Have %d processors.\n", numProcessors );
+    fprintf( stderr, "Have %d processors, %d threads.\n", numProcessors, number_threads );
     
     for( int i = 0; i < NUMBODIES; i++ )
     {
@@ -112,7 +112,7 @@ int main( int argc, char *argv[ ] )
     double time1 = omp_get_wtime( );
     // print performance here:::
     double megaBodies = (double)(NUMBODIES*NUMBODIES)/(time1-time0)/1000000.;
-    printf("megaBodies = %f\n", megaBodies);
+    printf("megaBodies = %f MegaBodies\n", megaBodies);
 
     return 0;
 }
