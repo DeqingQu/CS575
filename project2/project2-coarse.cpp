@@ -59,7 +59,7 @@ int main( int argc, char *argv[ ] )
     
     for( int t = 0; t < NUMSTEPS; t++ )
     {
-#pragma omp parallel for default(none), shared(Bodies)
+#pragma omp parallel for default(none) shared(Bodies) schedule(dynamic)
         for( int i = 0; i < NUMBODIES; i++ )
         {
             float fx = 0.;

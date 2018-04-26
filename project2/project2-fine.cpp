@@ -66,7 +66,7 @@ int main( int argc, char *argv[ ] )
             float fy = 0.;
             float fz = 0.;
             Body *bi = &Bodies[i];
-#pragma omp parallel for default(none), shared(i, Bodies, bi), reduction(+:fx, fy, fz)
+#pragma omp parallel for default(none) shared(i, Bodies, bi) reduction(+:fx, fy, fz)
             for( int j = 0; j < NUMBODIES; j++ )
             {
                 if( j == i )     continue;
