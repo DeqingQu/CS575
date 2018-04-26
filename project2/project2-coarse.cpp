@@ -9,8 +9,8 @@ const double EARTH_MASS           = 5.9742e24;     // kg
 const double EARTH_DIAMETER       = 12756000.32;   // meters
 const double TIMESTEP             =   1.0; // secs
 
-#define NUMBODIES       500
-#define NUMSTEPS        200
+#define NUMBODIES       2000
+#define NUMSTEPS        20
 
 struct body
 {

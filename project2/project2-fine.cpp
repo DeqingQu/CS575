@@ -9,9 +9,8 @@ const double EARTH_MASS           = 5.9742e24;     // kg
 const double EARTH_DIAMETER       = 12756000.32;   // meters
 const double TIMESTEP             =   1.0; // secs
 
-#define NUMTHREADS      1
-#define NUMBODIES       500
-#define NUMSTEPS        200
+#define NUMBODIES       2000
+#define NUMSTEPS        20
 
 struct body
 {
@@ -65,13 +64,14 @@ int main( int argc, char *argv[ ] )
             float fx = 0.;
             float fy = 0.;
             float fz = 0.;
-            Body *bi = &Bodies[i];
-#pragma omp parallel for default(none) shared(i, Bodies, bi) reduction(+:fx, fy, fz)
+            
+#pragma omp parallel for default(none) shared(i, Bodies) reduction(+:fx, fy, fz)
             for( int j = 0; j < NUMBODIES; j++ )
             {
                 if( j == i )     continue;
                 Body *bj = &Bodies[j];
-                
+                Body *bi = &Bodies[i];
+
                 float rsqd = GetDistanceSquared( bi, bj );
                 if( rsqd > 0. )
                 {
