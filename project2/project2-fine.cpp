@@ -9,8 +9,8 @@ const double EARTH_MASS           = 5.9742e24;     // kg
 const double EARTH_DIAMETER       = 12756000.32;   // meters
 const double TIMESTEP             =   1.0; // secs
 
-#define NUMBODIES       2000
-#define NUMSTEPS        20
+#define NUMBODIES       100
+#define NUMSTEPS        200
 
 struct body
 {
@@ -65,7 +65,7 @@ int main( int argc, char *argv[ ] )
             float fy = 0.;
             float fz = 0.;
             
-#pragma omp parallel for default(none) shared(i, Bodies) reduction(+:fx, fy, fz)
+#pragma omp parallel for default(none) shared(i, Bodies) reduction(+:fx, fy, fz) schedule(static)
             for( int j = 0; j < NUMBODIES; j++ )
             {
                 if( j == i )     continue;
