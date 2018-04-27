@@ -10,7 +10,7 @@ const double EARTH_DIAMETER       = 12756000.32;   // meters
 const double TIMESTEP             =   1.0; // secs
 
 #define NUMBODIES       100
-#define NUMSTEPS        20
+#define NUMSTEPS        200
 
 struct body
 {
@@ -59,7 +59,7 @@ int main( int argc, char *argv[ ] )
     
     for( int t = 0; t < NUMSTEPS; t++ )
     {
-#pragma omp parallel for default(none) shared(Bodies) schedule(dynamic)
+#pragma omp parallel for default(none) shared(Bodies) schedule(static)
         for( int i = 0; i < NUMBODIES; i++ )
         {
             float fx = 0.;
@@ -111,7 +111,7 @@ int main( int argc, char *argv[ ] )
     
     double time1 = omp_get_wtime( );
     // print performance here:::
-    double megaBodies = (double)(NUMBODIES*NUMBODIES)/(time1-time0)/1000000.;
+    double megaBodies = (double)(NUMBODIES*NUMBODIES*NUMSTEPS)/(time1-time0)/1000000.;
     printf("megaBodies = %f MegaBodies\n", megaBodies);
 
     return 0;

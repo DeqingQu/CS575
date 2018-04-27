@@ -65,7 +65,7 @@ int main( int argc, char *argv[ ] )
             float fy = 0.;
             float fz = 0.;
             
-#pragma omp parallel for default(none) shared(i, Bodies) reduction(+:fx, fy, fz) schedule(static)
+#pragma omp parallel for default(none) shared(i, Bodies) reduction(+:fx, fy, fz) schedule(dynamic)
             for( int j = 0; j < NUMBODIES; j++ )
             {
                 if( j == i )     continue;
@@ -112,7 +112,7 @@ int main( int argc, char *argv[ ] )
     
     double time1 = omp_get_wtime( );
     // print performance here:::
-    double megaBodies = (double)(NUMBODIES*NUMBODIES)/(time1-time0)/1000000.;
+    double megaBodies = (double)(NUMBODIES*NUMBODIES*NUMSTEPS)/(time1-time0)/1000000.;
     printf("megaBodies = %f MegaBodies\n", megaBodies);
 
     return 0;
