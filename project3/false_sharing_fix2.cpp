@@ -4,7 +4,7 @@
 #include <omp.h>
 
 //#define NUMPAD  15
-//#define NUMT    4
+//#define NUMT    1
 
 struct s
 {
@@ -18,26 +18,27 @@ int main( int argc, char *argv[ ] )
     return 1;
 #endif
     
-    omp_set_num_threads(NUMT);
-    int numProcessors = omp_get_num_procs( );
+    omp_set_num_threads(2);
+    int numProcessors = omp_get_num_procs();
     fprintf( stderr, "Have %d processors, %d threads.\n", numProcessors, NUMT );
 
     const int SomeBigNumber = 10000000;
 
-    double time0 = omp_get_wtime( );
+    double time0 = omp_get_wtime();
 
-#pragma omp parallel for default(none) shared(Array)
+#pragma omp parallel for
     for( int i = 0; i < 4; i++ )
     {
         float tmp = Array[i].value;
         for( int j = 0; j < SomeBigNumber; j++ )
         {
-            tmp = tmp + (float)rand( );
+            tmp = tmp + (float)rand();
         }
         Array[i].value = tmp;
     }
     
-    double time1 = omp_get_wtime( );
+    double time1 = omp_get_wtime();
+    
     // print performance here:::
     double megaTimes = (double)(SomeBigNumber*4)/(time1-time0)/1000000.;
     printf("megaTimes = %f MegaTimes\n", megaTimes);
