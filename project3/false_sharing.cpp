@@ -3,7 +3,7 @@
 #include <math.h>
 #include <omp.h>
 
-#define NUMPAD        0
+#define NUMPAD        1
 
 struct s
 {
@@ -29,26 +29,26 @@ int main( int argc, char *argv[ ] )
     double time0 = omp_get_wtime( );
 
     //  false sharing
-//#pragma omp parallel for
-//    for( int i = 0; i < 4; i++ )
-//    {
-//        for( int j = 0; j < SomeBigNumber; j++ )
-//        {
-//            Array[i].value = Array[i].value + (float)rand( );
-//        }
-//    }
-    
-    //  false sharing fix #2
 #pragma omp parallel for
     for( int i = 0; i < 4; i++ )
     {
-        float tmp = Array[i].value;
         for( int j = 0; j < SomeBigNumber; j++ )
         {
-            tmp = tmp + (float)rand( );
+            Array[i].value = Array[i].value + (float)rand( );
         }
-        Array[i].value = tmp;
     }
+    
+    //  false sharing fix #2
+//#pragma omp parallel for
+//    for( int i = 0; i < 4; i++ )
+//    {
+//        float tmp = Array[i].value;
+//        for( int j = 0; j < SomeBigNumber; j++ )
+//        {
+//            tmp = tmp + (float)rand( );
+//        }
+//        Array[i].value = tmp;
+//    }
     
     double time1 = omp_get_wtime( );
     // print performance here:::
