@@ -3,13 +3,13 @@
 #include <math.h>
 #include <omp.h>
 
-#define NUMPAD        6
+#define NUMPAD        0
 
 struct s
 {
     float value;
     //  false sharing fix #1
-//    int pad[NUMPAD];
+    int pad[NUMPAD];
 } Array[4];
 
 const int SomeBigNumber = 10000000;
@@ -34,7 +34,7 @@ int main( int argc, char *argv[ ] )
 //    {
 //        for( int j = 0; j < SomeBigNumber; j++ )
 //        {
-//            Array[ i ].value = Array[ i ].value + (float)rand( );
+//            Array[i].value = Array[i].value + (float)rand( );
 //        }
 //    }
     
@@ -42,12 +42,12 @@ int main( int argc, char *argv[ ] )
 #pragma omp parallel for
     for( int i = 0; i < 4; i++ )
     {
-        float tmp = Array[ i ].value;
+        float tmp = Array[i].value;
         for( int j = 0; j < SomeBigNumber; j++ )
         {
             tmp = tmp + (float)rand( );
         }
-        Array[ i ].value = tmp;
+        Array[i].value = tmp;
     }
     
     double time1 = omp_get_wtime( );
