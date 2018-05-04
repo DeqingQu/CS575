@@ -13,7 +13,7 @@ struct s
     int pad[NUMPAD];
 } Array[4];
 
-const int SomeBigNumber = 10000000;
+const int SomeBigNumber = 1000000000;
 
 int main( int argc, char *argv[ ] )
 {

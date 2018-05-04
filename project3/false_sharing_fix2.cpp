@@ -11,8 +11,6 @@ struct s
     float value;
 } Array[4];
 
-const int SomeBigNumber = 10000000;
-
 int main( int argc, char *argv[ ] )
 {
 #ifndef _OPENMP
@@ -23,10 +21,12 @@ int main( int argc, char *argv[ ] )
     omp_set_num_threads(NUMT);
     int numProcessors = omp_get_num_procs( );
     fprintf( stderr, "Have %d processors, %d threads.\n", numProcessors, NUMT );
-    
+
+    const int SomeBigNumber = 10000000;
+
     double time0 = omp_get_wtime( );
 
-#pragma omp parallel for
+#pragma omp parallel for default(none) shared(Array)
     for( int i = 0; i < 4; i++ )
     {
         float tmp = Array[i].value;
