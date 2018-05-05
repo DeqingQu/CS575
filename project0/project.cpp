@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define NUMT	         8
+//#define NUMT             8
 #define ARRAYSIZE       100000	// you decide
 #define NUMTRIES        1000	// you decide
 
@@ -28,7 +28,7 @@ main( )
         {
                 double time0 = omp_get_wtime( );
 
-                #pragma omp parallel for
+#pragma omp parallel for
                 for( int i = 0; i < ARRAYSIZE; i++ )
                 {
                         C[i] = A[i] * B[i];

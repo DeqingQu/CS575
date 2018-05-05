@@ -3,8 +3,8 @@
 #include <math.h>
 #include <omp.h>
 
-#define NUMPAD  15
-#define NUMT    4
+//#define NUMPAD  15
+//#define NUMT    4
 
 struct s
 {
@@ -13,7 +13,7 @@ struct s
     int pad[NUMPAD];
 } Array[4];
 
-const int SomeBigNumber = 1000000000;
+const int SomeBigNumber = 10000000;
 
 int main( int argc, char *argv[ ] )
 {
