@@ -18,12 +18,11 @@ int main( int argc, char *argv[ ] )
     return 1;
 #endif
     
-    omp_set_num_threads(2);
+    omp_set_num_threads(NUMT);
     int numProcessors = omp_get_num_procs();
     fprintf( stderr, "Have %d processors, %d threads.\n", numProcessors, NUMT );
 
     const int SomeBigNumber = 10000000;
-
     double time0 = omp_get_wtime();
 
 #pragma omp parallel for
@@ -32,7 +31,7 @@ int main( int argc, char *argv[ ] )
         float tmp = Array[i].value;
         for( int j = 0; j < SomeBigNumber; j++ )
         {
-            tmp = tmp + (float)rand();
+            tmp = tmp + 2.;//(float)rand();
         }
         Array[i].value = tmp;
     }
