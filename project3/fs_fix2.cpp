@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <omp.h>
+#include <time.h>
 
 //#define NUMPAD  15
 //#define NUMT    1
@@ -21,7 +22,7 @@ int main( int argc, char *argv[ ] )
     omp_set_num_threads(NUMT);
     int numProcessors = omp_get_num_procs();
     fprintf( stderr, "Have %d processors, %d threads.\n", numProcessors, NUMT );
-
+    
     const int SomeBigNumber = 10000000;
     double time0 = omp_get_wtime();
 
