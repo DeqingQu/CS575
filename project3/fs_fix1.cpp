@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <omp.h>
+#include <time.h>
 
 //#define NUMPAD  15
 //#define NUMT    4
@@ -34,7 +35,8 @@ int main( int argc, char *argv[ ] )
     {
         for( int j = 0; j < SomeBigNumber; j++ )
         {
-            Array[i].value = Array[i].value + 2.0f;//(float)rand( );
+            unsigned int seed = time(NULL);
+            Array[i].value = Array[i].value + (float)rand_r(&seed);
         }
     }
     
