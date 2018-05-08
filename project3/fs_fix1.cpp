@@ -34,7 +34,7 @@ int main( int argc, char *argv[ ] )
     {
         for( int j = 0; j < SomeBigNumber; j++ )
         {
-            Array[i].value = Array[i].value + 2.;//(float)rand( );
+            Array[i].value = Array[i].value + 2.0f;//(float)rand( );
         }
     }
     

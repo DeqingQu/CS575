@@ -32,7 +32,7 @@ int main( int argc, char *argv[ ] )
         float tmp = Array[i].value;
         for( int j = 0; j < SomeBigNumber; j++ )
         {
-            tmp = tmp + 2.;//(float)rand();
+            tmp = tmp + 2.0f;//(float)rand();
         }
         Array[i].value = tmp;
     }
