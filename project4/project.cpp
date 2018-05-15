@@ -1,6 +1,8 @@
 #include <omp.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 int  NowYear;           // 2014 - 2019
 int  NowMonth;          // 0 - 11
@@ -24,27 +26,10 @@ const float RANDOM_TEMP =                       10.0;
 const float MIDTEMP =                           40.0;
 const float MIDPRECIP =                         10.0;
 
-float
-Ranf( float low, float high, unsigned int* seed )
+float Ranf( float low, float high, unsigned int* seed )
 {
     float r = (float) rand_r(seed);      // 0 - RAND_MAX
     return( low + r * ( high - low ) / (float)RAND_MAX );
-}
-
-void updateEnvironment()
-{
-    unsigned int seed = 0;
-    float ang = (  30.*(float)NowMonth + 15.  ) * ( M_PI / 180. );
-    float temp = AVG_TEMP - AMP_TEMP * cos( ang );
-    
-    NowTemp = temp + Ranf( -RANDOM_TEMP, RANDOM_TEMP, &seed );
-    
-    float precip = AVG_PRECIP_PER_MONTH + AMP_PRECIP_PER_MONTH * sin( ang );
-    
-    NowPrecip = precip + Ranf( -RANDOM_PRECIP, RANDOM_PRECIP, &seed );
-    
-    if( NowPrecip < 0. )
-        NowPrecip = 0.;
 }
 
 void GrainDeer()
@@ -59,7 +44,24 @@ void Grain()
 
 void Watcher()
 {
+    unsigned int seed = time(NULL);
+    float ang = (  30.*(float)NowMonth + 15.  ) * ( M_PI / 180. );
+    float temp = AVG_TEMP - AMP_TEMP * cos( ang );
     
+    NowTemp = temp + Ranf( -RANDOM_TEMP, RANDOM_TEMP, &seed );
+    
+    float precip = AVG_PRECIP_PER_MONTH + AMP_PRECIP_PER_MONTH * sin( ang );
+    
+    NowPrecip = precip + Ranf( -RANDOM_PRECIP, RANDOM_PRECIP, &seed );
+    
+    if( NowPrecip < 0. )
+        NowPrecip = 0.;
+    
+    //  update month and year
+    NowMonth++;
+    NowYear = 2014 + NowMonth%12;
+    
+    printf("Month %d, Year %d\n", NowMonth, NowYear);
 }
 
 int
