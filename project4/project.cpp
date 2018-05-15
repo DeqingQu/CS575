@@ -2,51 +2,97 @@
 #include <stdio.h>
 #include <math.h>
 
-//#define NUMT             8
-#define ARRAYSIZE       100000	// you decide
-#define NUMTRIES        1000	// you decide
+int  NowYear;           // 2014 - 2019
+int  NowMonth;          // 0 - 11
 
-float A[ARRAYSIZE];
-float B[ARRAYSIZE];
-float C[ARRAYSIZE];
+float NowPrecip;        // inches of rain per month
+float NowTemp;          // temperature this month
+float NowHeight;        // grain height in inches
+int   NowNumDeer;       // current deer population
+
+const float GRAIN_GROWS_PER_MONTH =             8.0;
+const float ONE_DEER_EATS_PER_MONTH =           0.5;
+
+const float AVG_PRECIP_PER_MONTH =              6.0;
+const float AMP_PRECIP_PER_MONTH =              6.0;
+const float RANDOM_PRECIP =                     2.0;
+
+const float AVG_TEMP =                          50.0;
+const float AMP_TEMP =                          20.0;
+const float RANDOM_TEMP =                       10.0;
+
+const float MIDTEMP =                           40.0;
+const float MIDPRECIP =                         10.0;
+
+float
+Ranf( float low, float high, unsigned int* seed )
+{
+    float r = (float) rand_r(seed);      // 0 - RAND_MAX
+    return( low + r * ( high - low ) / (float)RAND_MAX );
+}
+
+void updateEnvironment()
+{
+    unsigned int seed = 0;
+    float ang = (  30.*(float)NowMonth + 15.  ) * ( M_PI / 180. );
+    float temp = AVG_TEMP - AMP_TEMP * cos( ang );
+    
+    NowTemp = temp + Ranf( -RANDOM_TEMP, RANDOM_TEMP, &seed );
+    
+    float precip = AVG_PRECIP_PER_MONTH + AMP_PRECIP_PER_MONTH * sin( ang );
+    
+    NowPrecip = precip + Ranf( -RANDOM_PRECIP, RANDOM_PRECIP, &seed );
+    
+    if( NowPrecip < 0. )
+        NowPrecip = 0.;
+}
+
+void GrainDeer()
+{
+    
+}
+
+void Grain()
+{
+    
+}
+
+void Watcher()
+{
+    
+}
 
 int
 main( )
 {
+    
+    NowNumDeer = 1;
+    NowHeight =  1.;
+    NowMonth =    0;
+    NowYear  = 2014;
+    
 #ifndef _OPENMP
-        fprintf( stderr, "OpenMP is not supported here -- sorry.\n" );
-        return 1;
+    fprintf( stderr, "OpenMP is not supported here -- sorry.\n" );
+    return 1;
 #endif
-
-        omp_set_num_threads( NUMT );
-        fprintf( stderr, "Using %d threads\n", NUMT );
-
-        double maxMegaMults = 0.;
-        double sumMegaMults = 0.;
-
-        for( int t = 0; t < NUMTRIES; t++ )
+    
+    omp_set_num_threads(3);
+#pragma omp parallel sections
+    {
+#pragma omp section
         {
-                double time0 = omp_get_wtime( );
-
-#pragma omp parallel for
-                for( int i = 0; i < ARRAYSIZE; i++ )
-                {
-                        C[i] = A[i] * B[i];
-                }
-
-                double time1 = omp_get_wtime( );
-                double megaMults = (double)ARRAYSIZE/(time1-time0)/1000000.;
-                sumMegaMults += megaMults;
-                if( megaMults > maxMegaMults )
-                        maxMegaMults = megaMults;
+            GrainDeer();
         }
-
-        double avgMegaMults = sumMegaMults/(double)NUMTRIES;
-        printf( "   Peak Performance = %8.2lf MegaMults/Sec\n", maxMegaMults );
-        printf( "Average Performance = %8.2lf MegaMults/Sec\n", avgMegaMults );
-
-	// note: %lf stands for "long float", which is how printf prints a "double"
-	//        %d stands for "decimal integer", not "double"
+#pragma omp section
+        {
+            Grain();
+        }
+#pragma omp section
+        {
+            Watcher();
+        }
+        // implied barrier: all sections must complete before we get here
+    }
 
         return 0;
 }
