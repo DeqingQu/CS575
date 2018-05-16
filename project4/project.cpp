@@ -13,6 +13,7 @@ float NowHeight;        // grain height in inches
 int   NowNumDeer;       // current deer population
 int   NowNumWolf;     // current wolf population
 float NowNumPest;      // current pest population
+unsigned int seed;
 
 const float GRAIN_GROWS_PER_MONTH =             8.0;
 const int   DEER_GROWS_PER_MONTH =              20;
@@ -91,7 +92,7 @@ void Wolf()
 
 void Pest()
 {
-    float tempNumPest = 1. * pow(2.71828f, -(pow((NowMonth % 12) - 6, 2.)));
+    float tempNumPest = 2. * pow(2.71828f, -(pow((NowMonth % 12) - 6, 2.)) / 4.) * Ranf(0.5, 1.0, &seed);
 #pragma omp barrier
     NowNumPest = tempNumPest;
 #pragma omp barrier
@@ -104,14 +105,13 @@ void Watcher()
     
     #pragma omp barrier
 //    printf("Month %d, Year %d\n", NowMonth % 12 + 1, NowYear);
-    printf("%d\t%f\t%f\t%f\t%d\t%d\n", NowMonth+1, NowTemp, NowPrecip, NowHeight, NowNumDeer, NowNumWolf);
+    printf("%d\t%f\t%f\t%f\t%d\t%d\t%f\n", NowMonth+1, NowTemp, NowPrecip, NowHeight, NowNumDeer, NowNumWolf, NowNumPest);
     
     //  update month and year
     NowMonth++;
     NowYear = 2014 + NowMonth/12;
     
     //  update temp and precipitation
-    unsigned int seed = time(NULL);
     float ang = (  30.*(float)NowMonth + 15.  ) * ( M_PI / 180. );
     float temp = AVG_TEMP - AMP_TEMP * cos( ang );
     NowTemp = temp + Ranf( -RANDOM_TEMP, RANDOM_TEMP, &seed );
@@ -131,9 +131,9 @@ int main( )
     NowHeight =  1.;
     NowMonth =    0;
     NowYear  = 2014;
+    seed = time(NULL);
     
     //  calculate temp and precipitation
-    unsigned int seed = time(NULL);
     float ang = (  30.*(float)NowMonth + 15.  ) * ( M_PI / 180. );
     float temp = AVG_TEMP - AMP_TEMP * cos( ang );
     NowTemp = temp + Ranf( -RANDOM_TEMP, RANDOM_TEMP, &seed );
@@ -147,9 +147,9 @@ int main( )
     
     omp_set_num_threads(5);
     
-    while (NowMonth < 72) {
+    for (int i=0; i < 72; i++)
 #pragma omp parallel sections
-        {
+    {
 #pragma omp section
             {
                 Deer();
@@ -171,8 +171,7 @@ int main( )
                 Watcher();
             }
             // implied barrier: all sections must complete before we get here
-        }
     }
 
-        return 0;
+    return 0;
 }
