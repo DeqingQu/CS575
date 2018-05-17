@@ -11,16 +11,16 @@ float NowPrecip;        // inches of rain per month
 float NowTemp;          // temperature this month
 float NowHeight;        // grain height in inches
 int   NowNumDeer;       // current deer population
-int   NowNumWolf;     // current wolf population
+int   NowNumWolves;     // current wolf population
 float NowNumPest;      // current pest population
 unsigned int seed;
 
 const float GRAIN_GROWS_PER_MONTH =             8.0;
 const int   DEER_GROWS_PER_MONTH =              20;
 const int   WOLF_GROWS_PER_MONTH =               1;
-const float PEST_GROWS_PER_MONTH =              1.0;
+const float PEST_GROWS_PER_MONTH =              2.0;
 
-const float ONE_DEER_EATS_PER_MONTH =           0.05;
+const float ONE_DEER_EATS_PER_MONTH =           0.01;
 const float ONE_WOLF_EATS_PER_MONTH =           1;
 
 const float AVG_PRECIP_PER_MONTH =              6.0;
@@ -64,8 +64,8 @@ void Deer()
     float grainFactor = 1 - exp(-pow((NowHeight - 0.0) / 10., 2));
 //    printf("grain factor = %f\n", grainFactor);
     tempNowNumDeer += grainFactor * DEER_GROWS_PER_MONTH;
-    if (tempNowNumDeer > ONE_WOLF_EATS_PER_MONTH * NowNumWolf && tempNowNumDeer > NowHeight / ONE_DEER_EATS_PER_MONTH)
-        tempNowNumDeer -= ONE_WOLF_EATS_PER_MONTH * NowNumWolf;
+    if (tempNowNumDeer > ONE_WOLF_EATS_PER_MONTH * NowNumWolves && tempNowNumDeer > NowHeight / ONE_DEER_EATS_PER_MONTH)
+        tempNowNumDeer -= ONE_WOLF_EATS_PER_MONTH * NowNumWolves;
     else
         tempNowNumDeer = tempNowNumDeer * 0.75;
 #pragma omp barrier
@@ -75,24 +75,24 @@ void Deer()
 #pragma omp barrier
 }
 
-void Wolf()
+void Wolves()
 {
-    int tempNumWolf = NowNumWolf;
+    int tempNumWolves = NowNumWolves;
     float deerFactor = 1 - exp(-pow((NowNumDeer - 30) / 10., 2));
-    if (deerFactor > 0.5)
-        tempNumWolf += WOLF_GROWS_PER_MONTH;
-    if (tempNumWolf > NowNumDeer / ONE_WOLF_EATS_PER_MONTH / 6.)
-        tempNumWolf = tempNumWolf * 0.5;
+    if (deerFactor > 0.5 && NowNumDeer > 30)
+        tempNumWolves += WOLF_GROWS_PER_MONTH;
+    if (tempNumWolves > NowNumDeer / ONE_WOLF_EATS_PER_MONTH / 6.)
+        tempNumWolves = tempNumWolves * 0.5;
     
 #pragma omp barrier
-    NowNumWolf = tempNumWolf;
+    NowNumWolves = tempNumWolves;
 #pragma omp barrier
 #pragma omp barrier
 }
 
 void Pest()
 {
-    float tempNumPest = 2. * pow(2.71828f, -(pow((NowMonth % 12) - 6, 2.)) / 4.) * Ranf(0.5, 1.0, &seed);
+    float tempNumPest = 2. * pow(2.71828f, -(pow((NowMonth % 12) - 6, 2.)) / 4.) * Ranf(0.5, 4.0, &seed);
 #pragma omp barrier
     NowNumPest = tempNumPest;
 #pragma omp barrier
@@ -105,7 +105,7 @@ void Watcher()
     
     #pragma omp barrier
 //    printf("Month %d, Year %d\n", NowMonth % 12 + 1, NowYear);
-    printf("%d\t%f\t%f\t%f\t%d\t%d\t%f\n", NowMonth+1, NowTemp, NowPrecip, NowHeight, NowNumDeer, NowNumWolf, NowNumPest);
+    printf("%d\t%.2f\t%.2f\t%.2f\t%d\t%d\t%.2f\n", NowMonth+1, NowTemp, NowPrecip, NowHeight, NowNumDeer, NowNumWolves, NowNumPest);
     
     //  update month and year
     NowMonth++;
@@ -126,8 +126,8 @@ void Watcher()
 int main( )
 {
     //  setup global variables
-    NowNumDeer = 40;
-    NowNumWolf = 4;
+    NowNumDeer = 50;
+    NowNumWolves = 2;
     NowHeight =  1.;
     NowMonth =    0;
     NowYear  = 2014;
@@ -156,7 +156,7 @@ int main( )
             }
 #pragma omp section
             {
-                Wolf();
+                Wolves();
             }
 #pragma omp section
             {

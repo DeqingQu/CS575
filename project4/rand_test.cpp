@@ -12,34 +12,34 @@ float Ranf( float low, float high, unsigned int* seed )
 
 int main()
 {
-
+    unsigned int seed = time(NULL);
+    
     omp_set_num_threads(4);
 
-    for (int i=0; i<2; i++)
+    for (int i=0; i<3; i++)
 #pragma omp parallel sections
     {
 #pragma omp section
         {
-            unsigned int seed = omp_get_thread_num() * 234682;
+//            unsigned int seed = omp_get_thread_num() * 234682;
             float r = Ranf(0., 1., &seed);
-            printf("random1 = %f\n", r);
+            printf("random1 = %f seed = %u\n", r, seed);
         }
 #pragma omp section
         {
-            unsigned int seed = omp_get_thread_num() * 49712646;
+//            unsigned int seed = omp_get_thread_num() * 49712646;
             float r = Ranf(0., 1., &seed);
             printf("random2 = %f\n", r);
         }
 #pragma omp section
         {
-            unsigned int seed = omp_get_thread_num() * 4124816;
-
+//            unsigned int seed = omp_get_thread_num() * 4124816;
             float r = Ranf(0., 1., &seed);
             printf("random3 = %f\n", r);
         }
 #pragma omp section
         {
-            unsigned int seed = omp_get_thread_num() * 112312428347284;
+//            unsigned int seed = omp_get_thread_num() * 112312428347284;
             float r = Ranf(0., 1., &seed);
             printf("random4 = %f\n", r);
         }
