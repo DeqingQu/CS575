@@ -4,9 +4,7 @@
 #include <math.h>
 #include <time.h>
 
-#define NUMT            4
-#define NUMS            10000000
-#define NUMTRIES        10
+#define NUMTRIES        5
 
 float A[NUMS];
 float C[NUMS];
@@ -25,7 +23,6 @@ int main( )
 #endif
 
         omp_set_num_threads( NUMT );
-        fprintf( stderr, "Using %d threads\n", NUMT );
     
         double sumMegaSqrts = 0.;
         unsigned int seed = time(NULL);
