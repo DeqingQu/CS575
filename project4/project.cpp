@@ -13,7 +13,7 @@ float NowHeight;        // grain height in inches
 int   NowNumDeer;       // current deer population
 int   NowNumWolves;     // current wolf population
 float NowNumPest;      // current pest population
-unsigned int seed;
+//unsigned int seed;
 
 const float GRAIN_GROWS_PER_MONTH =             8.0;
 const int   DEER_GROWS_PER_MONTH =              20;
@@ -92,6 +92,7 @@ void Wolves()
 
 void Pest()
 {
+    unsigned int seed = omp_get_thread_num() * 2235345;
     float tempNumPest = 2. * pow(2.71828f, -(pow((NowMonth % 12) - 6, 2.)) / 4.) * Ranf(0.5, 4.0, &seed);
 #pragma omp barrier
     NowNumPest = tempNumPest;
@@ -112,6 +113,7 @@ void Watcher()
     NowYear = 2014 + NowMonth/12;
     
     //  update temp and precipitation
+    unsigned int seed = omp_get_thread_num() * 42;
     float ang = (  30.*(float)NowMonth + 15.  ) * ( M_PI / 180. );
     float temp = AVG_TEMP - AMP_TEMP * cos( ang );
     NowTemp = temp + Ranf( -RANDOM_TEMP, RANDOM_TEMP, &seed );
@@ -131,7 +133,8 @@ int main( )
     NowHeight =  1.;
     NowMonth =    0;
     NowYear  = 2014;
-    seed = time(NULL);
+    
+    unsigned int seed = time(NULL);
     
     //  calculate temp and precipitation
     float ang = (  30.*(float)NowMonth + 15.  ) * ( M_PI / 180. );
