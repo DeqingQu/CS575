@@ -1,0 +1,44 @@
+
+Begin optimization report for: main()
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at project.cpp(35,9)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+LOOP END
+
+LOOP BEGIN at project.cpp(39,13)
+<Peeled>
+LOOP END
+
+LOOP BEGIN at project.cpp(39,13)
+   remark #15399: vectorization support: unroll factor set to 4
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15448: unmasked aligned unit stride loads: 1 
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 44 
+   remark #15477: vector loop cost: 34.000 
+   remark #15478: estimated potential speedup: 4.870 
+   remark #15479: lightweight vector operations: 4 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at project.cpp(39,13)
+<Remainder>
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at project.cpp(39,13)
+<Remainder>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at project.cpp(30,9)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+LOOP END
+===========================================================================
