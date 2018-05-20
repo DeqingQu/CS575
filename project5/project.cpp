@@ -35,7 +35,7 @@ int main( )
         for( int t = 0; t < NUMTRIES; t++ )
         {
             double time0 = omp_get_wtime( );
-#pragma omp parallel for
+#pragma omp parallel for 
             for( int i = 0; i < NUMS; i++ )
             {
                 C[i] = sqrt( A[i] );

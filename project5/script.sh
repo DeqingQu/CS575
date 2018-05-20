@@ -5,7 +5,7 @@ for t in 1 2 4
 do
     echo NUMT = $t
     # number of subdivisions:
-    for s in 1000 10000 100000 16000000 32000000 48000000 64000000
+    for s in 1000 10000 100000 32000000 64000000 128000000 256000000
     do
         echo NUMS = $s
 #        gcc-7 -DNUMS=$s -DNUMT=$t project.cpp -o pj.exe -lm -fopenmp -O0 -lstdc++
