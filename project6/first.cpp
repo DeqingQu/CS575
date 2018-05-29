@@ -15,15 +15,15 @@
 #include "cl_platform.h"
 
 
-#ifndef NUM_ELEMENTS
-#define	NUM_ELEMENTS		64*1024*1024
-#endif
-
-#ifndef LOCAL_SIZE
-#define	LOCAL_SIZE		32
-#endif
-
-#define	NUM_WORK_GROUPS		NUM_ELEMENTS/LOCAL_SIZE
+//#ifndef NUM_ELEMENTS
+//#define    NUM_ELEMENTS        64*1024*1024
+//#endif
+//
+//#ifndef LOCAL_SIZE
+//#define    LOCAL_SIZE        32
+//#endif
+//
+//#define    NUM_WORK_GROUPS        NUM_ELEMENTS/LOCAL_SIZE
 
 const char *			CL_FILE_NAME = { "first.cl" };
 const float			TOL = 0.0001f;
