@@ -25,8 +25,8 @@
 //
 //#define    NUM_WORK_GROUPS        NUM_ELEMENTS/LOCAL_SIZE
 
-const char *			CL_FILE_NAME = { "first.cl" };
-const float			TOL = 0.0001f;
+const char *			CL_FILE_NAME = { "second.cl" };
+const float			TOL = 1.0005f;
 
 void				Wait( cl_command_queue );
 int				LookAtTheBits( float );
@@ -73,7 +73,7 @@ main( int argc, char *argv[ ] )
 	float *hA = new float[ NUM_ELEMENTS ];
 	float *hB = new float[ NUM_ELEMENTS ];
 	float *hC = new float[ NUM_ELEMENTS ];
-    float *hD = new float[ NUM_ELEMENTS ];
+        float *hD = new float[ NUM_ELEMENTS ];
 
 	// fill the host memory buffers:
 
@@ -187,7 +187,7 @@ main( int argc, char *argv[ ] )
     
     status = clSetKernelArg( kernel, 3, sizeof(cl_mem), &dD );
     if( status != CL_SUCCESS )
-        fprintf( stderr, "clSetKernelArg failed (3)\n" );
+        fprintf( stderr, "clSetKernelArg failed (4)\n" );
 
 	// 11. enqueue the kernel object for execution:
 
@@ -223,10 +223,10 @@ main( int argc, char *argv[ ] )
 		float expected = hA[i] * hB[i] + hC[i];
 		if( fabs( hD[i] - expected ) > TOL )
 		{
-			fprintf( stderr, "%4d: %13.6f * %13.6f wrongly produced %13.6f instead of %13.6f (%13.8f)\n",
-				i, hA[i], hB[i], hC[i], expected, fabs(hC[i]-expected) );
-			fprintf( stderr, "%4d:    0x%08x *    0x%08x wrongly produced    0x%08x instead of    0x%08x\n",
-				i, LookAtTheBits(hA[i]), LookAtTheBits(hB[i]), LookAtTheBits(hC[i]), LookAtTheBits(expected) );
+			fprintf( stderr, "%4d: %13.6f * %13.6f + %13.6f wrongly produced %13.6f instead of %13.6f (%13.8f)\n",
+				i, hA[i], hB[i], hC[i], hD[i], expected, fabs(hC[i]-expected) );
+			//fprintf( stderr, "%4d:    0x%08x *    0x%08x wrongly produced    0x%08x instead of    0x%08x\n",
+				//i, LookAtTheBits(hA[i]), LookAtTheBits(hB[i]), LookAtTheBits(hC[i]), LookAtTheBits(expected) );
 		}
 	}
 
@@ -246,12 +246,12 @@ main( int argc, char *argv[ ] )
 	clReleaseMemObject(     dA  );
 	clReleaseMemObject(     dB  );
 	clReleaseMemObject(     dC  );
-    clReleaseMemObject(     dD  );
+        clReleaseMemObject(     dD  );
     
 	delete [ ] hA;
 	delete [ ] hB;
 	delete [ ] hC;
-    delete [ ] hD;
+        delete [ ] hD;
 
 	return 0;
 }
