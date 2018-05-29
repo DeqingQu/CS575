@@ -220,7 +220,7 @@ main( int argc, char *argv[ ] )
 
 	for( int i = 0; i < NUM_ELEMENTS; i++ )
 	{
-		float expected = hA[i] * hB[i] + hc[i];
+		float expected = hA[i] * hB[i] + hC[i];
 		if( fabs( hD[i] - expected ) > TOL )
 		{
 			fprintf( stderr, "%4d: %13.6f * %13.6f wrongly produced %13.6f instead of %13.6f (%13.8f)\n",
