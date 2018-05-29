@@ -11,8 +11,8 @@
 #endif
 #include <omp.h>
 
-#include "CL/cl.h"
-#include "CL/cl_platform.h"
+#include "cl.h"
+#include "cl_platform.h"
 
 
 #ifndef NUM_ELEMENTS
