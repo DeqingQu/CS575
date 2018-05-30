@@ -220,7 +220,7 @@ main( int argc, char *argv[ ] )
     for( int i = 0; i < numWorkGroups; i++ )
     {
         sum += hC[ i ];
-        printf( stderr, "hc[%d] = %13.6f\n", i, hc[i] );
+        printf( stderr, "hC[%d] = %13.6f\n", i, hC[i] );
     }
     float expected = ((float)NUM_ELEMENTS - 1) * (float)NUM_ELEMENTS / 2;
 //    for( int i = 0; i < NUM_ELEMENTS; i++ )
