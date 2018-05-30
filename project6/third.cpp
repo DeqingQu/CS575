@@ -178,7 +178,7 @@ main( int argc, char *argv[ ] )
 		fprintf( stderr, "clSetKernelArg failed (2)\n" );
 
     // local “prods” array – one per work-item
-    status = clSetKernelArg( kernel, 2, LOCAL_SIZE * sizeof(float), NULL );
+    status = clSetKernelArg( kernel, 2, sizeof(float), NULL );
     if( status != CL_SUCCESS )
         fprintf( stderr, "clSetKernelArg failed (3)\n" );
     
@@ -262,15 +262,14 @@ main( int argc, char *argv[ ] )
 void
 Wait( cl_command_queue queue )
 {
-	cl_event wait;
-
-	cl_int status = clEnqueueMarker( queue, &wait );
-	if( status != CL_SUCCESS )
-		fprintf( stderr, "Wait: clEnqueueMarker failed\n" );
-
-	status = clEnqueueWaitForEvents( queue, 1, &wait );
-	if( status != CL_SUCCESS )
-		fprintf( stderr, "Wait: clEnqueueWaitForEvents failed\n" );
+    cl_event wait;
+    cl_int status;
+    status = clEnqueueMarker( queue, &wait );
+    if( status != CL_SUCCESS )
+        fprintf( stderr, "Wait: clEnqueueMarker failed\n" );
+    status = clWaitForEvents( 1, &wait ); // blocks until everything is done!
+    if( status != CL_SUCCESS )
+        fprintf( stderr, "Wait: clWaitForEvents failed\n" );
 }
 
 
