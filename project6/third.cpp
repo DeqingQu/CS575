@@ -208,7 +208,7 @@ main( int argc, char *argv[ ] )
 
 	// 12. read the results buffer back from the device to the host:
 
-	status = clEnqueueReadBuffer( cmdQueue, dC, CL_TRUE, 0, dataSize, hC, 0, NULL, NULL );
+	status = clEnqueueReadBuffer( cmdQueue, dC, CL_TRUE, 0, cSize, hC, 0, NULL, NULL );
 	if( status != CL_SUCCESS )
 			fprintf( stderr, "clEnqueueReadBuffer failed\n" );
 
@@ -221,7 +221,7 @@ main( int argc, char *argv[ ] )
     {
         sum += hC[ i ];
     }
-    float expected = 0
+    float expected = 0;
 	for( int i = 0; i < NUM_ELEMENTS; i++ )
 	{
 		expected += hA[i] * hB[i];
