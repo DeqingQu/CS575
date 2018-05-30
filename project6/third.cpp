@@ -220,6 +220,7 @@ main( int argc, char *argv[ ] )
     for( int i = 0; i < numWorkGroups; i++ )
     {
         sum += hC[ i ];
+        printf( stderr, "hc[%d] = %13.6f\n", i, hc[i] );
     }
     float expected = ((float)NUM_ELEMENTS - 1) * (float)NUM_ELEMENTS / 2;
 //    for( int i = 0; i < NUM_ELEMENTS; i++ )
@@ -263,11 +264,13 @@ void
 Wait( cl_command_queue queue )
 {
     cl_event wait;
-    cl_int status;
+    cl_int      status;
+    
     status = clEnqueueMarker( queue, &wait );
     if( status != CL_SUCCESS )
         fprintf( stderr, "Wait: clEnqueueMarker failed\n" );
-    status = clWaitForEvents( 1, &wait ); // blocks until everything is done!
+    
+    status = clWaitForEvents( 1, &wait );
     if( status != CL_SUCCESS )
         fprintf( stderr, "Wait: clWaitForEvents failed\n" );
 }

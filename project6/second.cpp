@@ -262,15 +262,16 @@ main( int argc, char *argv[ ] )
 void
 Wait( cl_command_queue queue )
 {
-	cl_event wait;
-
-	cl_int status = clEnqueueMarker( queue, &wait );
-	if( status != CL_SUCCESS )
-		fprintf( stderr, "Wait: clEnqueueMarker failed\n" );
-
-	status = clEnqueueWaitForEvents( queue, 1, &wait );
-	if( status != CL_SUCCESS )
-		fprintf( stderr, "Wait: clEnqueueWaitForEvents failed\n" );
+    cl_event wait;
+    cl_int      status;
+    
+    status = clEnqueueMarker( queue, &wait );
+    if( status != CL_SUCCESS )
+        fprintf( stderr, "Wait: clEnqueueMarker failed\n" );
+    
+    status = clWaitForEvents( 1, &wait );
+    if( status != CL_SUCCESS )
+        fprintf( stderr, "Wait: clWaitForEvents failed\n" );
 }
 
 
