@@ -221,7 +221,7 @@ main( int argc, char *argv[ ] )
     {
         sum += hC[ i ];
     }
-    float expected = (NUM_ELEMENTS - 1) * NUM_ELEMENTS / 2;
+    float expected = ((float)NUM_ELEMENTS - 1) * (float)NUM_ELEMENTS / 2;
 //    for( int i = 0; i < NUM_ELEMENTS; i++ )
 //    {
 //        expected += hA[i] * hB[i];
