@@ -220,8 +220,8 @@ main( int argc, char *argv[ ] )
     for( int i = 0; i < numWorkGroups; i++ )
     {
         sum += hC[ i ];
-        if ((hC[i] - (64.*(float)i + 31.)*16.) > TOL)
-            fprintf( stderr, "hC[%d] = %13.6f (expected %13.6f)\n", i, hC[i], (64.*(float)i + 31.)*16. );
+//        if ((hC[i] - (64.*(float)i + 31.)*16.) > TOL)
+//            fprintf( stderr, "hC[%d] = %13.6f (expected %13.6f)\n", i, hC[i], (64.*(float)i + 31.)*16. );
     }
     float expected = ((float)NUM_ELEMENTS - 1) * (float)NUM_ELEMENTS / 2;
 
