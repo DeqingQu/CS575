@@ -217,7 +217,7 @@ main( int argc, char *argv[ ] )
 	// did it work?
 
     float sum = 0.;
-    for( int i = 0; i < numWorkgroups; i++ )
+    for( int i = 0; i < numWorkGroups; i++ )
     {
         sum += hC[ i ];
     }
@@ -233,7 +233,7 @@ main( int argc, char *argv[ ] )
     }
 
 	fprintf( stderr, "%8d\t%4d\t%10d\t%10.3lf MegaMultsPerSecond\n",
-		NUM_ELEMENTS, LOCAL_SIZE, NUM_WORK_GROUPS, (double)NUM_ELEMENTS/(time1-time0)/1000000. );
+		NUM_ELEMENTS, LOCAL_SIZE, numWorkGroups, (double)NUM_ELEMENTS/(time1-time0)/1000000. );
 
 #ifdef WIN32
 	Sleep( 2000 );
