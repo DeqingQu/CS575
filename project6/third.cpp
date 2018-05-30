@@ -178,7 +178,7 @@ main( int argc, char *argv[ ] )
 		fprintf( stderr, "clSetKernelArg failed (2)\n" );
 
     // local “prods” array – one per work-item
-    status = clSetKernelArg( kernel, 2, sizeof(float), NULL );
+    status = clSetKernelArg( kernel, 2, LOCAL_SIZE * sizeof(float), NULL );
     if( status != CL_SUCCESS )
         fprintf( stderr, "clSetKernelArg failed (3)\n" );
     
@@ -221,11 +221,11 @@ main( int argc, char *argv[ ] )
     {
         sum += hC[ i ];
     }
-    float expected = 0;
-	for( int i = 0; i < NUM_ELEMENTS; i++ )
-	{
-		expected += hA[i] * hB[i];
-	}
+    float expected = (NUM_ELEMENTS - 1) * NUM_ELEMENTS / 2;
+//    for( int i = 0; i < NUM_ELEMENTS; i++ )
+//    {
+//        expected += hA[i] * hB[i];
+//    }
     if( fabs( sum - expected ) > TOL )
     {
         fprintf( stderr, "wrongly produced %13.6f instead of %13.6f (%13.8f)\n",
