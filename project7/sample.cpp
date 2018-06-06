@@ -61,6 +61,8 @@ const char *CL_BINARY_NAME = { "particles.nv" };
 
 double	ElapsedTime;
 int		ShowPerformance;
+double  TotalTime;
+int     Circles;
 
 size_t GlobalWorkSize[3] = { NUM_PARTICLES, 1, 1 };
 size_t LocalWorkSize[3] = { LOCAL_SIZE,    1, 1 };
@@ -372,6 +374,16 @@ Animate()
 		time1 = omp_get_wtime();
 		ElapsedTime = time1 - time0;
 	}
+    
+    if (Circles < 100) {
+        Circles ++;
+        TotalTime += ElapsedTime;
+    }
+    else {
+        fprintf( stderr, "Average Performance %6.8f GigaParticles/Sec\n", (float)NUM_PARTICLES * Circles / TotalTime / 1000000000. );
+        Circles = 0;
+        TotalTime = 0;
+    }
 
 	clFinish(CmdQueue);
 	status = clEnqueueReleaseGLObjects(CmdQueue, 1, &dCobj, 0, NULL, NULL);

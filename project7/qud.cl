@@ -34,7 +34,7 @@ Particle( global point *dPobj, global vector *dVel, global color *dCobj )
 {
 	const float4 G       = (float4) ( 0., -9.8, 0., 0. );
 	const float  DT      = 0.1;
-	const float4 VG		 = (float4) (0.1, .01, 0.02, 0.);
+	const float4 VG		 = (float4) (0.01, 0.1, 0.01, 0.);
 	const sphere Sphere1 = (sphere)(-600., -800., 0., 600.);
 	const sphere Sphere2 = (sphere)(600., -800., 0., 600.);
 
