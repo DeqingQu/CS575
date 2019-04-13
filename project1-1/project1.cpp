@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include <omp.h>
 
@@ -150,6 +151,6 @@ int main( int argc, char *argv[ ] )
 			maxPerformance = megaTrialsPerSecond;
 		currentProb = (float)numHits/(float)NUMTRIALS;
 	}
-	printf( "Number of Threads\tNumber of Trials\tProbability\tMegaTrialsPerSecond\n" );
+	printf( "Threads\tTrials\tProbability\tMegaTrialsPerSecond\n" );
 	printf( "%d\t%d\t%8.2lf\t%8.2lf\n", NUMT, NUMTRIALS, currentProb, maxPerformance );
 }
