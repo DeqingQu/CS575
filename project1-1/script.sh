@@ -4,22 +4,11 @@
 for t in 1 2 4 8
 do
     echo NUMT = $t
-    gcc-7 -DNUMT=$t -DNUMTRIALS=1000000  project.cpp -o proj.exe -lm -fopenmp
-    ./proj.exe
-done
-
-for t in 1 2 4 8
-do
-    echo NUMT = $t
-    gcc-7 -DNUMT=$t -DNUMTRIALS=10000000  project.cpp -o proj.exe -lm -fopenmp
-    ./proj.exe
-done
-
-for t in 1 2 4 8
-do
-    echo NUMT = $t
-    gcc-7 -DNUMT=$t -DNUMTRIALS=100000000  project.cpp -o proj.exe -lm -fopenmp
-    ./proj.exe
+    for a in 1000000 5000000 10000000 10000000
+    do
+        g++ -DNUMT=$t -DNUMTRIALS=$a  project.cpp -o proj.exe -lm -fopenmp
+        ./proj.exe
+    done
 done
 
 rm proj.exe
