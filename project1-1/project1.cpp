@@ -111,7 +111,7 @@ int main( int argc, char *argv[ ] )
 			float c = xc*xc + yc*yc - r*r;
 			float d = b*b - 4.*a*c;
 
-			if( d < 0 )
+			if( d < 0. )
 			    continue;
 
 			// hits the circle:
@@ -121,7 +121,7 @@ int main( int argc, char *argv[ ] )
 			float t2 = (-b - d ) / ( 2.*a );	// time to intersect the circle
 			float tmin = t1 < t2 ? t1 : t2;		// only care about the first intersection
 
-			if( tmin < 0 )
+			if( tmin < 0. )
 		        continue;
 
 			// where does it intersect the circle?
@@ -150,7 +150,7 @@ int main( int argc, char *argv[ ] )
 			// find out if it hits the infinite plate:
 			float t = ( 0. - ycir ) / outy;
 
-			if( t < 0 )
+			if( t < 0. )
 			    continue;
 			else
 			    numHits += 1;
