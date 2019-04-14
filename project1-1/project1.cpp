@@ -163,5 +163,5 @@ int main( int argc, char *argv[ ] )
 		currentProb = (float)numHits/(float)NUMTRIALS;
 	}
 	printf( "Threads\tTrials\tProbability\tMegaTrialsPerSecond\n" );
-	printf( "%d\t%d\t%8.2lf\t%8.2lf\n", NUMT, NUMTRIALS, currentProb, maxPerformance );
+	printf( "%d\t%d\t%8.4lf\t%8.4lf\n", NUMT, NUMTRIALS, currentProb, maxPerformance );
 }
