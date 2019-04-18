@@ -16,7 +16,7 @@
 
 // how many tries to discover the maximum performance:
 #ifndef NUMTRIES
-#define NUMTRIES	100
+#define NUMTRIES	10
 #endif
 
 // ranges for the random numbers:
