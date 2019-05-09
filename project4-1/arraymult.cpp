@@ -65,8 +65,8 @@ int main( int argc, char *argv[ ] )
         printf( "  maxPerformanceNoneSimdMul Peak Performance = %8.2lf MegaMults/Sec\n", maxPerformanceNoneSimdMul );
         printf( "  maxPerformanceSimdMulSum Peak Performance = %8.2lf MegaMults/Sec\n", maxPerformanceSimdMulSum );
         printf( "  maxPerformanceNoneSimdMulSum Peak Performance = %8.2lf MegaMults/Sec\n", maxPerformanceNoneSimdMulSum );
-        printf( "  Speedup for SimdMul \n", maxPerformanceSimdMul / maxPerformanceNoneSimdMul );
-        printf( "  Speedup for SimdMulSum \n", maxPerformanceSimdMulSum / maxPerformanceNoneSimdMulSum );
+        printf( "  Speedup for SimdMul = %8.2f \n", maxPerformanceSimdMul / maxPerformanceNoneSimdMul );
+        printf( "  Speedup for SimdMulSum = %8.2f\n", maxPerformanceSimdMulSum / maxPerformanceNoneSimdMulSum );
         
     
     return 0;
