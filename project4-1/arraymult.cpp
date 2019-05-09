@@ -5,7 +5,7 @@
 #endif
 
 #ifndef NUMTRIES
-#define NUMTRIES	1000
+#define NUMTRIES	100
 #endif
 
 float A[ARRAYSIZE];
@@ -65,6 +65,9 @@ int main( int argc, char *argv[ ] )
         printf( "  maxPerformanceNoneSimdMul Peak Performance = %8.2lf MegaMults/Sec\n", maxPerformanceNoneSimdMul );
         printf( "  maxPerformanceSimdMulSum Peak Performance = %8.2lf MegaMults/Sec\n", maxPerformanceSimdMulSum );
         printf( "  maxPerformanceNoneSimdMulSum Peak Performance = %8.2lf MegaMults/Sec\n", maxPerformanceNoneSimdMulSum );
+        printf( "  Speedup for SimdMul \n", maxPerformanceSimdMul / maxPerformanceNoneSimdMul );
+        printf( "  Speedup for SimdMulSum \n", maxPerformanceSimdMulSum / maxPerformanceNoneSimdMulSum );
+        
     
     return 0;
 }
