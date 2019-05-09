@@ -32,26 +32,26 @@ int main( int argc, char *argv[ ] )
                     maxPerformanceSimdMul = p;
             
                 //  NonSimdMul
-                double time0 = omp_get_wtime( );
+                time0 = omp_get_wtime( );
                 NonSimdMul(A, B, C, ARRAYSIZE);
-                double time1 = omp_get_wtime( );
-                double p = (double)ARRAYSIZE/(time1-time0)/1000000.;
+                time1 = omp_get_wtime( );
+                p = (double)ARRAYSIZE/(time1-time0)/1000000.;
                 if( p > maxPerformanceNoneSimdMul )
                     maxPerformanceNoneSimdMul = p;
             
                 //  SimdMulSum
-                double time0 = omp_get_wtime( );
+                time0 = omp_get_wtime( );
                 SimdMulSum(A, B, ARRAYSIZE);
-                double time1 = omp_get_wtime( );
-                double p = (double)ARRAYSIZE/(time1-time0)/1000000.;
+                time1 = omp_get_wtime( );
+                p = (double)ARRAYSIZE/(time1-time0)/1000000.;
                 if( p > maxPerformanceSimdMulSum )
                     maxPerformanceSimdMulSum = p;
             
                 //  NonSimdMulSum
-                double time0 = omp_get_wtime( );
+                time0 = omp_get_wtime( );
                 NonSimdMulSum(A, B, ARRAYSIZE);
-                double time1 = omp_get_wtime( );
-                double p = (double)ARRAYSIZE/(time1-time0)/1000000.;
+                time1 = omp_get_wtime( );
+                p = (double)ARRAYSIZE/(time1-time0)/1000000.;
                 if( p > maxPerformanceNoneSimdMulSum )
                     maxPerformanceNoneSimdMulSum = p;
         }
