@@ -9,4 +9,5 @@ do
     ./arraymult.exe
 done
 
+rm simd.p4.o
 rm arraymult.exe
