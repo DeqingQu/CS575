@@ -15,25 +15,20 @@ int   NowNumWolves;     // current wolf population
 float NowNumPest;      // current pest population
 //unsigned int seed;
 
-const float GRAIN_GROWS_PER_MONTH =               8.0;
-const int   DEER_GROWS_PER_MONTH =                20;
-const int   WOLF_GROWS_PER_MONTH =                1;
-const float PEST_GROWS_PER_MONTH =                2.0;
-
-const float ONE_DEER_EATS_PER_MONTH =		      0.5;
-const float ONE_WOLF_EATS_PER_MONTH =             1;
-
-const float AVG_PRECIP_PER_MONTH =		          6.0;	// average
-const float AMP_PRECIP_PER_MONTH =		          6.0;	// plus or minus
-const float RANDOM_PRECIP =			              2.0;	// plus or minus noise
-
-
-const float AVG_TEMP =				              50.0;	// average
-const float AMP_TEMP =				              20.0;	// plus or minus
-const float RANDOM_TEMP =			              10.0;	// plus or minus noise
-
-const float MIDTEMP =                             40.0;
-const float MIDPRECIP =                           10.0;
+const float GRAIN_GROWS_PER_MONTH =             8.0;
+const int   DEER_GROWS_PER_MONTH =              20;
+const int   WOLF_GROWS_PER_MONTH =               1;
+const float PEST_GROWS_PER_MONTH =              2.0;
+const float ONE_DEER_EATS_PER_MONTH =           0.01;
+const float ONE_WOLF_EATS_PER_MONTH =           1;
+const float AVG_PRECIP_PER_MONTH =              6.0;
+const float AMP_PRECIP_PER_MONTH =              6.0;
+const float RANDOM_PRECIP =                     2.0;
+const float AVG_TEMP =                          50.0;
+const float AMP_TEMP =                          20.0;
+const float RANDOM_TEMP =                       10.0;
+const float MIDTEMP =                           40.0;
+const float MIDPRECIP =                         10.0;
 
 float Ranf( float low, float high, unsigned int* seed )
 {
