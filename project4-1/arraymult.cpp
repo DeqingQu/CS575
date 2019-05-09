@@ -1,7 +1,12 @@
 #include "simd.p4.h"
 
-#define ARRAYSIZE       100000	// you decide
-#define NUMTRIES        1000	// you decide
+#ifndef ARRAYSIZE
+#define ARRAYSIZE	100000
+#endif
+
+#ifndef NUMTRIES
+#define NUMTRIES	1000
+#endif
 
 float A[ARRAYSIZE];
 float B[ARRAYSIZE];
