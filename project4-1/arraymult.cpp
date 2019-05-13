@@ -12,6 +12,11 @@ float A[ARRAYSIZE];
 float B[ARRAYSIZE];
 float C[ARRAYSIZE];
 
+float Ranf( float low, float high )
+{
+    float r = (float) rand();         // 0 - RAND_MAX
+    return(   low  +  r * ( high - low ) / (float)RAND_MAX   );
+}
 
 int main( int argc, char *argv[ ] )
 {
@@ -25,6 +30,12 @@ int main( int argc, char *argv[ ] )
         double maxPerformanceSimdMulSum = 0.;
         double maxPerformanceNoneSimdMulSum = 0.;
         
+        for( int i =0; i < ARRAYSIZE; i++ )
+        {
+            A[i] = Ranf(-100.0f, 100.0f);
+            B[i] = Ranf(-100.0f, 100.0f);
+            C[i] = Ranf(-100.0f, 100.0f);
+        }
 
         for( int t = 0; t < NUMTRIES; t++ )
         {
@@ -46,19 +57,25 @@ int main( int argc, char *argv[ ] )
             
                 //  SimdMulSum
                 time0 = omp_get_wtime( );
-                SimdMulSum(A, B, ARRAYSIZE);
+                float s = SimdMulSum(A, B, ARRAYSIZE);
                 time1 = omp_get_wtime( );
                 p = (double)ARRAYSIZE/(time1-time0)/1000000.;
                 if( p > maxPerformanceSimdMulSum )
+                {   
                     maxPerformanceSimdMulSum = p;
+                    printf("sum - simd = %.4f\n", s);
+                }
             
                 //  NonSimdMulSum
                 time0 = omp_get_wtime( );
-                NonSimdMulSum(A, B, ARRAYSIZE);
+                s = NonSimdMulSum(A, B, ARRAYSIZE);
                 time1 = omp_get_wtime( );
                 p = (double)ARRAYSIZE/(time1-time0)/1000000.;
                 if( p > maxPerformanceNoneSimdMulSum )
+                {
                     maxPerformanceNoneSimdMulSum = p;
+                    printf("sum - simd = %.4f\n", s);
+                }
         }
 
         printf( "  maxPerformanceSimdMul Peak Performance = %8.2lf MegaMults/Sec\n", maxPerformanceSimdMul );
