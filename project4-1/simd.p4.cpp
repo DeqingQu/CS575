@@ -96,12 +96,13 @@ NonSimdMul( float *a, float *b,   float *c,   int len )
 float
 NonSimdMulSum( float *a, float *b, int len )
 {
-	float sum = 0.;
+	float sum[4] = { 0., 0., 0., 0. };
+	int limit = ( len/SSE_WIDTH ) * SSE_WIDTH;
 
 	for( int i = 0; i < len; i++ )
 	{
-		sum += a[i] * b[i];
+		sum[0] += a[i] * b[i];
 	}
 
-	return sum;
+	return sum[0];
 }

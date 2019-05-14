@@ -18,10 +18,11 @@
 #define ALIGNED		__attribute__((aligned(16)))
 
 
-void	SimdMul(    float *, float *,  float *, int );
-void	NonSimdMul(    float *, float *,  float *, int );
-float	SimdMulSum( float *, float *, int );
-float	NonSimdMulSum( float *, float *, int );
+void    SimdMul(    float *, float *,  float *, int );
+float   SimdMulSum( float *, float *, int );
+
+void    NonSimdMul(    float *, float *,  float *, int );
+float   NonSimdMulSum( float *, float *, int );
 
 
 #endif		// SIMD_H

@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # number of threads
-for size in 1000 5000 10000 20000 40000 60000 80000 100000 120000 140000 160000 180000 200000
+for size in 1000 5000 10000 50000 100000 200000 500000 1000000 2000000 5000000
 do
     echo ARRAYSIZE = $size
     g++  -c  simd.p4.cpp -o simd.p4.o
-    g++  -DARRAYSIZE=$size -o arraymult.exe  arraymult.cpp simd.p4.o  -lm  -fopenmp
-    ./arraymult.exe
+    g++  -DARRAYSIZE=$size -o main.exe  main.cpp simd.p4.o  -lm  -fopenmp
+    ./main.exe
 done
 
 rm simd.p4.o
-rm arraymult.exe
+rm main.exe
