@@ -1,7 +1,7 @@
 #include "simd.p4.h"
 
 #ifndef NUMTRIES
-#define NUMTRIES	10
+#define NUMTRIES	50
 #endif
 
 #ifndef ARRAYSIZE
