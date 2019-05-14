@@ -44,24 +44,22 @@ int main( int argc, char *argv[ ] )
             
                 //  SimdMulSum
                 time0 = omp_get_wtime( );
-                float s = SimdMulSum(A, B, ARRAYSIZE);
+                SimdMulSum(A, B, ARRAYSIZE);
                 time1 = omp_get_wtime( );
                 perf = (double)ARRAYSIZE/(time1-time0)/1000000.;
                 if( perf > SimdMulSumPerf )
                 {   
                     SimdMulSumPerf = perf;
-                    printf("sum - simd = %.4f\n", s);
                 }
             
                 //  NonSimdMulSum
                 time0 = omp_get_wtime( );
-                s = NonSimdMulSum(A, B, ARRAYSIZE);
+                NonSimdMulSum(A, B, ARRAYSIZE);
                 time1 = omp_get_wtime( );
                 perf = (double)ARRAYSIZE/(time1-time0)/1000000.;
                 if( perf > NoneSimdMulSumPerf )
                 {
                     NoneSimdMulSumPerf = perf;
-                    printf("sum - non simd = %.4f\n", s);
                 }
         }
 
