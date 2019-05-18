@@ -8,7 +8,7 @@ do
     do
 	let ng=$gs/$ls
         g++ -DNUM_ELEMENTS=$gs -DLOCAL_SIZE=$ls -DNUM_WORK_GROUPS=$ng -o third third.cpp /scratch/cuda-7.0/lib64/libOpenCL.so -lm -fopenmp
-        ./second
+        ./third
     done
 done
 
