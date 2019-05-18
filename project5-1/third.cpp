@@ -18,14 +18,12 @@
 //#ifndef NUM_ELEMENTS
 //#define    NUM_ELEMENTS        64*1024*1024
 //#endif
-
-#ifndef LOCAL_SIZE
-#define    LOCAL_SIZE        32
-#endif
-
+//
+//#ifndef LOCAL_SIZE
+//#define    LOCAL_SIZE        32
+//#endif
+//
 //#define    NUM_WORK_GROUPS        NUM_ELEMENTS/LOCAL_SIZE
-
-size_t numWorkGroups = NUM_ELEMENTS / LOCAL_SIZE;
 
 const char *			CL_FILE_NAME = { "third.cl" };
 const float			TOL = 0.0001f;
@@ -74,10 +72,10 @@ main( int argc, char *argv[ ] )
 
 	float *hA = new float[ NUM_ELEMENTS ];
 	float *hB = new float[ NUM_ELEMENTS ];
-	float *hC = new float[ numWorkGroups ];
+	float *hC = new float[ NUM_WORK_GROUPS ];
     
     size_t abSize = NUM_ELEMENTS * sizeof(float);
-    size_t cSize = numWorkGroups * sizeof(float);
+    size_t cSize = NUM_WORK_GROUPS * sizeof(float);
     
 	// fill the host memory buffers:
 
@@ -217,7 +215,7 @@ main( int argc, char *argv[ ] )
 	// did it work?
 
     float sum = 0.;
-    for( int i = 0; i < numWorkGroups; i++ )
+    for( int i = 0; i < NUM_WORK_GROUPS; i++ )
     {
         sum += hC[ i ];
 //        if ((hC[i] - (64.*(float)i + 31.)*16.) > TOL)
@@ -230,9 +228,9 @@ main( int argc, char *argv[ ] )
         fprintf( stderr, "wrongly produced %13.6f instead of %13.6f (%13.8f)\n",
                 sum, expected, fabs(sum-expected) );
     }
-
-	fprintf( stderr, "%8d\t%4d\t%10d\t%10.3lf MegaMultsPerSecond\n",
-		NUM_ELEMENTS, LOCAL_SIZE, numWorkGroups, (double)NUM_ELEMENTS/(time1-time0)/1000000. );
+    
+    fprintf( stderr, "%8d\t%4d\t%10d\t%10.3lf\t MegaMultiply-ReductionsPerSecond\n",
+		NUM_ELEMENTS, LOCAL_SIZE, NUM_WORK_GROUPS, (double)NUM_ELEMENTS/(time1-time0)/1000000. );
 
 #ifdef WIN32
 	Sleep( 2000 );

@@ -15,17 +15,15 @@
 #include "cl_platform.h"
 
 
-//#ifndef NMB
-//#define	NMB			64
+//#ifndef NUM_ELEMENTS
+//#define    NUM_ELEMENTS        64*1024*1024
 //#endif
 //
 //#ifndef LOCAL_SIZE
-//#define	LOCAL_SIZE		64
+//#define    LOCAL_SIZE        32
 //#endif
-
-#define NUM_ELEMENTS		NMB*1024*1024
-
-#define	NUM_WORK_GROUPS		NUM_ELEMENTS/LOCAL_SIZE
+//
+//#define    NUM_WORK_GROUPS        NUM_ELEMENTS/LOCAL_SIZE
 
 const char *			CL_FILE_NAME = { "first.cl" };
 const float			TOL = 0.0001f;
@@ -221,7 +219,7 @@ main( int argc, char *argv[ ] )
 	}
 
 	fprintf( stderr, "%8d\t%4d\t%10d\t%10.3lf MegaMultsPerSecond\n",
-		NMB, LOCAL_SIZE, NUM_WORK_GROUPS, (double)NUM_ELEMENTS/(time1-time0)/1000000. );
+		NUM_ELEMENTS, LOCAL_SIZE, NUM_WORK_GROUPS, (double)NUM_ELEMENTS/(time1-time0)/1000000. );
 
 #ifdef WIN32
 	Sleep( 2000 );
@@ -245,27 +243,26 @@ main( int argc, char *argv[ ] )
 }
 
 
+// wait until all queued tasks have completed:
+
+void
+Wait( cl_command_queue queue )
+{
+    cl_event wait;
+    cl_int      status;
+    
+    status = clEnqueueMarker( queue, &wait );
+    if( status != CL_SUCCESS )
+        fprintf( stderr, "Wait: clEnqueueMarker failed\n" );
+    
+    status = clWaitForEvents( 1, &wait );
+    if( status != CL_SUCCESS )
+        fprintf( stderr, "Wait: clWaitForEvents failed\n" );
+}
+
 int
 LookAtTheBits( float fp )
 {
 	int *ip = (int *)&fp;
 	return *ip;
-}
-
-
-// wait until all queued tasks have taken place:
-
-void
-Wait( cl_command_queue queue )
-{
-      cl_event wait;
-      cl_int      status;
-
-      status = clEnqueueMarker( queue, &wait );
-      if( status != CL_SUCCESS )
-	      fprintf( stderr, "Wait: clEnqueueMarker failed\n" );
-
-      status = clWaitForEvents( 1, &wait );
-      if( status != CL_SUCCESS )
-	      fprintf( stderr, "Wait: clWaitForEvents failed\n" );
 }

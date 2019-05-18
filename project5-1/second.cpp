@@ -73,7 +73,7 @@ main( int argc, char *argv[ ] )
 	float *hA = new float[ NUM_ELEMENTS ];
 	float *hB = new float[ NUM_ELEMENTS ];
 	float *hC = new float[ NUM_ELEMENTS ];
-        float *hD = new float[ NUM_ELEMENTS ];
+    float *hD = new float[ NUM_ELEMENTS ];
 
 	// fill the host memory buffers:
 
