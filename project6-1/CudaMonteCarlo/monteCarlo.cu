@@ -24,12 +24,20 @@
 #endif
 
 #ifndef NUMTRIALS
-#define NUMTRIALS		100		// to make the timing more accurate
+#define NUMTRIALS		10		// to make the timing more accurate
 #endif
 
 #ifndef TOLERANCE
 #define TOLERANCE		0.00001f	// tolerance to relative error
 #endif
+
+// ranges for the random numbers:
+const float XCMIN =	 0.0;
+const float XCMAX =	 2.0;
+const float YCMIN =	 0.0;
+const float YCMAX =	 2.0;
+const float RMIN  =	 0.5;
+const float RMAX  =	 2.0;
 
 // array multiplication (CUDA Kernel) on the device: C = A * B
 
@@ -59,6 +67,35 @@ __global__  void ArrayMul( float *A, float *B, float *C )
 		C[wgNum] = prods[0];
 }
 
+// helper functions
+float Ranf( float low, float high )
+{
+        float r = (float) rand();               // 0 - RAND_MAX
+        float t = r  /  (float) RAND_MAX;       // 0. - 1.
+
+        return   low  +  t * ( high - low );
+}
+
+int Ranf( int ilow, int ihigh )
+{
+        float low = (float)ilow;
+        float high = ceil( (float)ihigh );
+
+        return (int) Ranf(low,high);
+}
+
+void TimeOfDaySeed( )
+{
+	struct tm y2k = { 0 };
+	y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
+	y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+
+	time_t  timer;
+	time( &timer );
+	double seconds = difftime( timer, mktime(&y2k) );
+	unsigned int seed = (unsigned int)( 1000.*seconds );    // milliseconds
+	srand( seed );
+}
 
 // main program:
 
@@ -72,6 +109,18 @@ main( int argc, char* argv[ ] )
 	float * hA = new float [ SIZE ];
 	float * hB = new float [ SIZE ];
 	float * hC = new float [ SIZE/BLOCKSIZE ];
+    
+	float * hxcs = new float [NUMTRIALS];
+	float * hycs = new float [NUMTRIALS];
+	float * hrs = new float [NUMTRIALS];
+
+    // fill the random-value arrays:
+    for( int n = 0; n < NUMTRIALS; n++ )
+    {
+        hxcs[n] = Ranf( XCMIN, XCMAX );
+        hycs[n] = Ranf( YCMIN, YCMAX );
+        hrs[n] = Ranf(  RMIN,  RMAX );
+    }
 
 	for( int i = 0; i < SIZE; i++ )
 	{
@@ -169,11 +218,22 @@ main( int argc, char* argv[ ] )
 		sum += (double)hC[i];
 	}
 	fprintf( stderr, "\nsum = %10.2lf\n", sum );
+    
+    double sum = 0.;
+	for(int i = 0; i < NUMTRIALS; i++ )
+	{
+		fprintf(stderr, "hxcs[%6d] = %10.2f\nhycs[%6d] = %10.2f\nhrs[%6d] = %10.2f\n", i, hxcs[i], hycs[i], hrs[i]);
+	}
 
 	// clean up memory:
 	delete [ ] hA;
 	delete [ ] hB;
 	delete [ ] hC;
+    
+    // clean up memory:
+	delete [ ] hxcs;
+	delete [ ] hycs;
+	delete [ ] hrs;
 
 	status = cudaFree( dA );
 		checkCudaErrors( status );
