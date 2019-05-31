@@ -45,9 +45,9 @@ __global__  void ArrayMul( float *A, float *B, float *C )
 
 __global__  void MonteCarlo( float *xcs, float *ycs, float *rs, int *numHits )
 {
-	int gid = blockIdx.x*blockDim.x + threadIdx.x;
+	//int gid = blockIdx.x*blockDim.x + threadIdx.x;
 	//C[gid] = A[gid] * B[gid];
-    numHits[0] = 10000;
+    //numHits[0] = 10000;
     
     __shared__ float prods[BLOCKSIZE];
 
@@ -239,6 +239,7 @@ main( int argc, char* argv[ ] )
 
     float prob = (float)(hnumHits[0]) / (float)(NUMTRIALS);
 	fprintf( stderr, "\nProbability=%8.4lf\n", prob );
+    fprintf( stderr, "\NumHit=%10d\n", hnumHits[0] );
     
 	// clean up memory:
 //	delete [ ] hA;
