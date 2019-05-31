@@ -48,7 +48,7 @@ __global__  void MonteCarlo( float *xcs, float *ycs, float *rs, int *numHits )
 	//int gid = blockIdx.x*blockDim.x + threadIdx.x;
 	//C[gid] = A[gid] * B[gid];
     //numHits[0] = 10000;
-    
+        
     __shared__ float prods[BLOCKSIZE];
 
 	unsigned int numItems = blockDim.x;
@@ -70,7 +70,7 @@ __global__  void MonteCarlo( float *xcs, float *ycs, float *rs, int *numHits )
 
 	__syncthreads();
 	if (tnum == 0)
-		numHits[0] = prods[0];
+		numHits[wgNum] = prods[0];
 }
 
 // helper functions
@@ -120,7 +120,7 @@ main( int argc, char* argv[ ] )
 	float * hxcs = new float [ NUMTRIALS ];
 	float * hycs = new float [ NUMTRIALS ];
 	float * hrs = new float [ NUMTRIALS ];
-    int * hnumHits = new int [1];
+    int * hnumHits = new int [ NUMTRIALS/BLOCKSIZE ];
     
 
     // fill the random-value arrays:
@@ -149,7 +149,7 @@ main( int argc, char* argv[ ] )
 	dim3 dimsxcs( NUMTRIALS, 1, 1 );
 	dim3 dimsycs( NUMTRIALS, 1, 1 );
 	dim3 dimsrs( NUMTRIALS, 1, 1 );
-    dim3 dimsnumHits( 1, 1, 1);
+    dim3 dimsnumHits( NUMTRIALS, 1, 1);
     
 
 	cudaError_t status;
@@ -166,7 +166,7 @@ main( int argc, char* argv[ ] )
 		checkCudaErrors( status );
 	status = cudaMalloc( reinterpret_cast<void **>(&drs), NUMTRIALS*sizeof(float) );
 		checkCudaErrors( status );
-    status = cudaMalloc( reinterpret_cast<void **>(&dnumHits), sizeof(int) );
+    status = cudaMalloc( reinterpret_cast<void **>(&dnumHits), (NUMTRIALS/BLOCKSIZE)*sizeof(int) );
 		checkCudaErrors( status );
 
 
@@ -234,12 +234,17 @@ main( int argc, char* argv[ ] )
 
 	// copy result from the device to the host:
 
-	status = cudaMemcpy( hnumHits, dnumHits, sizeof(int), cudaMemcpyDeviceToHost );
+	status = cudaMemcpy( hnumHits, dnumHits, (NUMTRIALS/BLOCKSIZE)*sizeof(int), cudaMemcpyDeviceToHost );
 		checkCudaErrors( status );
-
-    float prob = (float)(hnumHits[0]) / (float)(NUMTRIALS);
+    
+    int sum = 0.;
+	for(int i = 0; i < NUMTRIALS/BLOCKSIZE; i++ )
+	{
+		sum += hnumHits[i];
+	}
+    float prob = (float)(sum) / (float)(NUMTRIALS);
 	fprintf( stderr, "\nProbability=%8.4lf\n", prob );
-    fprintf( stderr, "\NumHit=%10d\n", hnumHits[0] );
+    fprintf( stderr, "\NumHit=%10d\n", sum );
     
 	// clean up memory:
 //	delete [ ] hA;
