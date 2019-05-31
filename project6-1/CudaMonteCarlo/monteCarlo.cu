@@ -35,20 +35,9 @@ const float YCMAX =	 2.0;
 const float RMIN  =	 0.5;
 const float RMAX  =	 2.0;
 
-// array multiplication (CUDA Kernel) on the device: C = A * B
-
-__global__  void ArrayMul( float *A, float *B, float *C )
-{
-	int gid = blockIdx.x*blockDim.x + threadIdx.x;
-	C[gid] = A[gid] * B[gid];
-}
-
+// monte carlo (CUDA Kernel) on the device
 __global__  void MonteCarlo( float *xcs, float *ycs, float *rs, int *numHits )
 {
-	//int gid = blockIdx.x*blockDim.x + threadIdx.x;
-	//C[gid] = A[gid] * B[gid];
-    //numHits[0] = 10000;
-        
     __shared__ int prods[BLOCKSIZE];
 
 	unsigned int numItems = blockDim.x;
@@ -72,7 +61,7 @@ __global__  void MonteCarlo( float *xcs, float *ycs, float *rs, int *numHits )
     }
     else
     {
-            // hits the circle:
+        // hits the circle:
         // get the first intersection:
         d = sqrt( d );
         float t1 = (-b + d ) / ( 2.*a );	// time to intersect the circle
@@ -175,18 +164,12 @@ main( int argc, char* argv[ ] )
 	int dev = findCudaDevice(argc, (const char **)argv);
 
 	// allocate host memory:
-
-//	float * hA = new float [ SIZE ];
-//	float * hB = new float [ SIZE ];
-//	float * hC = new float [ SIZE ];
-    
     
 	float * hxcs = new float [ NUMTRIALS ];
 	float * hycs = new float [ NUMTRIALS ];
 	float * hrs = new float [ NUMTRIALS ];
     int * hnumHits = new int [ NUMTRIALS/BLOCKSIZE ];
     
-
     // fill the random-value arrays:
     for( int n = 0; n < NUMTRIALS; n++ )
     {
@@ -195,20 +178,10 @@ main( int argc, char* argv[ ] )
         hrs[n] = Ranf(  RMIN,  RMAX );
     }
     
-//	for( int i = 0; i < SIZE; i++ )
-//	{
-//		hA[i] = hB[i] = (float) sqrt(  (float)i  );
-//	}
-
 	// allocate device memory:
 
-//	float *dA, *dB, *dC;
     float *dxcs, *dycs, *drs;
     int *dnumHits;
-
-//	dim3 dimsA( SIZE, 1, 1 );
-//	dim3 dimsB( SIZE, 1, 1 );
-//	dim3 dimsC( SIZE, 1, 1 );
     
 	dim3 dimsxcs( NUMTRIALS, 1, 1 );
 	dim3 dimsycs( NUMTRIALS, 1, 1 );
@@ -217,12 +190,6 @@ main( int argc, char* argv[ ] )
     
 
 	cudaError_t status;
-//	status = cudaMalloc( reinterpret_cast<void **>(&dA), SIZE*sizeof(float) );
-//		checkCudaErrors( status );
-//	status = cudaMalloc( reinterpret_cast<void **>(&dB), SIZE*sizeof(float) );
-//		checkCudaErrors( status );
-//	status = cudaMalloc( reinterpret_cast<void **>(&dC), SIZE*sizeof(float) );
-//		checkCudaErrors( status );
 
 	status = cudaMalloc( reinterpret_cast<void **>(&dxcs), NUMTRIALS*sizeof(float) );
 		checkCudaErrors( status );
@@ -235,11 +202,6 @@ main( int argc, char* argv[ ] )
 
 
 	// copy host memory to the device:
-
-//	status = cudaMemcpy( dA, hA, SIZE*sizeof(float), cudaMemcpyHostToDevice );
-//		checkCudaErrors( status );
-//	status = cudaMemcpy( dB, hB, SIZE*sizeof(float), cudaMemcpyHostToDevice );
-//		checkCudaErrors( status );
 
 	status = cudaMemcpy( dxcs, hxcs, NUMTRIALS*sizeof(float), cudaMemcpyHostToDevice );
 		checkCudaErrors( status );
@@ -272,7 +234,6 @@ main( int argc, char* argv[ ] )
 
 	// execute the kernel:
 
-//	ArrayMul<<< grid, threads >>>( dA, dB, dC );
     MonteCarlo<<< grid, threads >>>( dxcs, dycs, drs, dnumHits );
 
 	// record the stop event:
@@ -294,7 +255,7 @@ main( int argc, char* argv[ ] )
 	double secondsTotal = 0.001 * (double)msecTotal;
 	double trialsPerSecond = (float)NUMTRIALS / secondsTotal;
 	double megaTrialsPerSecond = trialsPerSecond / 1000000.;
-	fprintf( stderr, "Size = %10d, MegaTrials/Second = %10.2lf\n", NUMTRIALS, megaTrialsPerSecond );
+	fprintf( stderr, "NUMTRIALS = %10d, MegaTrials/Second = %10.2lf\n", NUMTRIALS, megaTrialsPerSecond );
 
 	// copy result from the device to the host:
 
@@ -307,24 +268,14 @@ main( int argc, char* argv[ ] )
 		sum += hnumHits[i];
 	}
     float prob = (float)(sum) / (float)(NUMTRIALS);
-	fprintf( stderr, "\nProbability=%8.4lf\n", prob );
     fprintf( stderr, "\NumHit=%10d\n", sum );
+	fprintf( stderr, "\nProbability=%8.4lf\n", prob );
     
 	// clean up memory:
-//	delete [ ] hA;
-//	delete [ ] hB;
-//	delete [ ] hC;
     delete [ ] hxcs;
     delete [ ] hycs;
     delete [ ] hrs;
     delete [ ] hnumHits;
-
-//	status = cudaFree( dA );
-//		checkCudaErrors( status );
-//	status = cudaFree( dB );
-//		checkCudaErrors( status );
-//	status = cudaFree( dC );
-//		checkCudaErrors( status );
 
     status = cudaFree( dxcs );
 		checkCudaErrors( status );
@@ -334,8 +285,6 @@ main( int argc, char* argv[ ] )
 		checkCudaErrors( status );
     status = cudaFree( dnumHits );
 		checkCudaErrors( status );
-
-
 
 	return 0;
 }
