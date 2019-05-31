@@ -23,10 +23,6 @@
 #define SIZE			1*1024*1024	// array size
 #endif
 
-#ifndef NUMTRIALS
-#define NUMTRIALS		10		// to make the timing more accurate
-#endif
-
 #ifndef TOLERANCE
 #define TOLERANCE		0.00001f	// tolerance to relative error
 #endif
@@ -43,28 +39,15 @@ const float RMAX  =	 2.0;
 
 __global__  void ArrayMul( float *A, float *B, float *C )
 {
-	__shared__ float prods[BLOCKSIZE];
+	int gid = blockIdx.x*blockDim.x + threadIdx.x;
+	C[gid] = A[gid] * B[gid];
+}
 
-	unsigned int numItems = blockDim.x;
-	unsigned int tnum = threadIdx.x;
-	unsigned int wgNum = blockIdx.x;
-	unsigned int gid = blockIdx.x*blockDim.x + threadIdx.x;
-
-	prods[tnum] = A[gid] * B[gid];
-
-	for (int offset = 1; offset < numItems; offset *= 2)
-	{
-		int mask = 2 * offset - 1;
-		__syncthreads();
-		if ((tnum & mask) == 0)
-		{
-			prods[tnum] += prods[tnum + offset];
-		}
-	}
-
-	__syncthreads();
-	if (tnum == 0)
-		C[wgNum] = prods[0];
+__global__  void MonteCarlo( float *xcs, float *ycs, float *rs, int *numHits )
+{
+	int gid = blockIdx.x*blockDim.x + threadIdx.x;
+	C[gid] = A[gid] * B[gid];
+    numHits[0] = 10000;
 }
 
 // helper functions
@@ -106,13 +89,16 @@ main( int argc, char* argv[ ] )
 
 	// allocate host memory:
 
-	float * hA = new float [ SIZE ];
-	float * hB = new float [ SIZE ];
-	float * hC = new float [ SIZE/BLOCKSIZE ];
+//	float * hA = new float [ SIZE ];
+//	float * hB = new float [ SIZE ];
+//	float * hC = new float [ SIZE ];
     
-	float * hxcs = new float [NUMTRIALS];
-	float * hycs = new float [NUMTRIALS];
-	float * hrs = new float [NUMTRIALS];
+    
+	float * hxcs = new float [ SIZE ];
+	float * hycs = new float [ SIZE ];
+	float * hrs = new float [ SIZE ];
+    int * hnumHits = new int [1];
+    
 
     // fill the random-value arrays:
     for( int n = 0; n < NUMTRIALS; n++ )
@@ -121,37 +107,58 @@ main( int argc, char* argv[ ] )
         hycs[n] = Ranf( YCMIN, YCMAX );
         hrs[n] = Ranf(  RMIN,  RMAX );
     }
-
-	for( int i = 0; i < SIZE; i++ )
-	{
-		hA[i] = hB[i] = (float) sqrt(  (float)(i+1)  );
-	}
+    
+//	for( int i = 0; i < SIZE; i++ )
+//	{
+//		hA[i] = hB[i] = (float) sqrt(  (float)i  );
+//	}
 
 	// allocate device memory:
 
-	float *dA, *dB, *dC;
+//	float *dA, *dB, *dC;
+    float *dxcs, *dycs, *drs;
+    int *dnumHits;
 
-	dim3 dimsA( SIZE, 1, 1 );
-	dim3 dimsB( SIZE, 1, 1 );
-	dim3 dimsC( SIZE/BLOCKSIZE, 1, 1 );
-
-	//__shared__ float prods[SIZE/BLOCKSIZE];
-
+//	dim3 dimsA( SIZE, 1, 1 );
+//	dim3 dimsB( SIZE, 1, 1 );
+//	dim3 dimsC( SIZE, 1, 1 );
+    
+	dim3 dimsxcs( SIZE, 1, 1 );
+	dim3 dimsycs( SIZE, 1, 1 );
+	dim3 dimsrs( SIZE, 1, 1 );
+    dim3 dimsnumHits( 1, 1, 1);
+    
 
 	cudaError_t status;
-	status = cudaMalloc( reinterpret_cast<void **>(&dA), SIZE*sizeof(float) );
+//	status = cudaMalloc( reinterpret_cast<void **>(&dA), SIZE*sizeof(float) );
+//		checkCudaErrors( status );
+//	status = cudaMalloc( reinterpret_cast<void **>(&dB), SIZE*sizeof(float) );
+//		checkCudaErrors( status );
+//	status = cudaMalloc( reinterpret_cast<void **>(&dC), SIZE*sizeof(float) );
+//		checkCudaErrors( status );
+
+	status = cudaMalloc( reinterpret_cast<void **>(&dxcs), SIZE*sizeof(float) );
 		checkCudaErrors( status );
-	status = cudaMalloc( reinterpret_cast<void **>(&dB), SIZE*sizeof(float) );
+	status = cudaMalloc( reinterpret_cast<void **>(&dycs), SIZE*sizeof(float) );
 		checkCudaErrors( status );
-	status = cudaMalloc( reinterpret_cast<void **>(&dC), (SIZE/BLOCKSIZE)*sizeof(float) );
+	status = cudaMalloc( reinterpret_cast<void **>(&drs), SIZE*sizeof(float) );
+		checkCudaErrors( status );
+    status = cudaMalloc( reinterpret_cast<void **>(&dnumHits), sizeof(int) );
 		checkCudaErrors( status );
 
 
 	// copy host memory to the device:
 
-	status = cudaMemcpy( dA, hA, SIZE*sizeof(float), cudaMemcpyHostToDevice );
+//	status = cudaMemcpy( dA, hA, SIZE*sizeof(float), cudaMemcpyHostToDevice );
+//		checkCudaErrors( status );
+//	status = cudaMemcpy( dB, hB, SIZE*sizeof(float), cudaMemcpyHostToDevice );
+//		checkCudaErrors( status );
+
+	status = cudaMemcpy( dxcs, hxcs, SIZE*sizeof(float), cudaMemcpyHostToDevice );
 		checkCudaErrors( status );
-	status = cudaMemcpy( dB, hB, SIZE*sizeof(float), cudaMemcpyHostToDevice );
+	status = cudaMemcpy( dycs, hycs, SIZE*sizeof(float), cudaMemcpyHostToDevice );
+		checkCudaErrors( status );
+    status = cudaMemcpy( drs, hrs, SIZE*sizeof(float), cudaMemcpyHostToDevice );
 		checkCudaErrors( status );
 
 	// setup the execution parameters:
@@ -178,10 +185,8 @@ main( int argc, char* argv[ ] )
 
 	// execute the kernel:
 
-	for( int t = 0; t < NUMTRIALS; t++)
-	{
-	        ArrayMul<<< grid, threads >>>( dA, dB, dC );
-	}
+//	ArrayMul<<< grid, threads >>>( dA, dB, dC );
+    MonteCarlo<<< grid, threads >>>( dxcs, dycs, drs, dnumHits );
 
 	// record the stop event:
 
@@ -200,49 +205,43 @@ main( int argc, char* argv[ ] )
 	// compute and print the performance
 
 	double secondsTotal = 0.001 * (double)msecTotal;
-	double multsPerSecond = (float)SIZE * (float)NUMTRIALS / secondsTotal;
+	double multsPerSecond = (float)SIZE / secondsTotal;
 	double megaMultsPerSecond = multsPerSecond / 1000000.;
-	fprintf( stderr, "Array Size = %10d, MegaMultReductions/Second = %10.2lf\n", SIZE, megaMultsPerSecond );
+	fprintf( stderr, "Size = %10d, MegaMults/Second = %10.2lf\n", SIZE, megaMultsPerSecond );
 
 	// copy result from the device to the host:
 
-	status = cudaMemcpy( hC, dC, (SIZE/BLOCKSIZE)*sizeof(float), cudaMemcpyDeviceToHost );
+	status = cudaMemcpy( hnumHits, dnumHits, sizeof(int), cudaMemcpyDeviceToHost );
 		checkCudaErrors( status );
 
-	// check the sum :
-
-	double sum = 0.;
-	for(int i = 0; i < SIZE/BLOCKSIZE; i++ )
-	{
-		//fprintf(stderr, "hC[%6d] = %10.2f\n", i, hC[i]);
-		sum += (double)hC[i];
-	}
-	fprintf( stderr, "\nsum = %10.2lf\n", sum );
+	fprintf( stderr, "\n%8.4lf\n", (float)numHits[0]/(float)SIZE );
     
-    double sum = 0.;
-	for(int i = 0; i < NUMTRIALS; i++ )
-	{
-		fprintf(stderr, "hxcs[%6d] = %10.2f\nhycs[%6d] = %10.2f\nhrs[%6d] = %10.2f\n", i, hxcs[i], hycs[i], hrs[i]);
-	}
-
 	// clean up memory:
-	delete [ ] hA;
-	delete [ ] hB;
-	delete [ ] hC;
-    
-    // clean up memory:
-	delete [ ] hxcs;
-	delete [ ] hycs;
-	delete [ ] hrs;
+//	delete [ ] hA;
+//	delete [ ] hB;
+//	delete [ ] hC;
+    delete [ ] hxcs;
+    delete [ ] hycs;
+    delete [ ] hrs;
+    delete [ ] hnumHits;
 
-	status = cudaFree( dA );
+//	status = cudaFree( dA );
+//		checkCudaErrors( status );
+//	status = cudaFree( dB );
+//		checkCudaErrors( status );
+//	status = cudaFree( dC );
+//		checkCudaErrors( status );
+
+    status = cudaFree( dxcs );
 		checkCudaErrors( status );
-	status = cudaFree( dB );
+	status = cudaFree( dxys );
 		checkCudaErrors( status );
-	status = cudaFree( dC );
+	status = cudaFree( drs );
 		checkCudaErrors( status );
+    status = cudaFree( dnumHits );
+		checkCudaErrors( status );
+
 
 
 	return 0;
 }
-
