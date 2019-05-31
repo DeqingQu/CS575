@@ -19,8 +19,8 @@
 #define BLOCKSIZE		32		// number of threads per block
 #endif
 
-#ifndef SIZE
-#define SIZE			1*1024*1024	// array size
+#ifndef NUMTRIALS
+#define NUMTRIALS			16*1024	// array size
 #endif
 
 #ifndef TOLERANCE
@@ -94,14 +94,14 @@ main( int argc, char* argv[ ] )
 //	float * hC = new float [ SIZE ];
     
     
-	float * hxcs = new float [ SIZE ];
-	float * hycs = new float [ SIZE ];
-	float * hrs = new float [ SIZE ];
+	float * hxcs = new float [ NUMTRIALS ];
+	float * hycs = new float [ NUMTRIALS ];
+	float * hrs = new float [ NUMTRIALS ];
     int * hnumHits = new int [1];
     
 
     // fill the random-value arrays:
-    for( int n = 0; n < SIZE; n++ )
+    for( int n = 0; n < NUMTRIALS; n++ )
     {
         hxcs[n] = Ranf( XCMIN, XCMAX );
         hycs[n] = Ranf( YCMIN, YCMAX );
@@ -123,9 +123,9 @@ main( int argc, char* argv[ ] )
 //	dim3 dimsB( SIZE, 1, 1 );
 //	dim3 dimsC( SIZE, 1, 1 );
     
-	dim3 dimsxcs( SIZE, 1, 1 );
-	dim3 dimsycs( SIZE, 1, 1 );
-	dim3 dimsrs( SIZE, 1, 1 );
+	dim3 dimsxcs( NUMTRIALS, 1, 1 );
+	dim3 dimsycs( NUMTRIALS, 1, 1 );
+	dim3 dimsrs( NUMTRIALS, 1, 1 );
     dim3 dimsnumHits( 1, 1, 1);
     
 
@@ -137,11 +137,11 @@ main( int argc, char* argv[ ] )
 //	status = cudaMalloc( reinterpret_cast<void **>(&dC), SIZE*sizeof(float) );
 //		checkCudaErrors( status );
 
-	status = cudaMalloc( reinterpret_cast<void **>(&dxcs), SIZE*sizeof(float) );
+	status = cudaMalloc( reinterpret_cast<void **>(&dxcs), NUMTRIALS*sizeof(float) );
 		checkCudaErrors( status );
-	status = cudaMalloc( reinterpret_cast<void **>(&dycs), SIZE*sizeof(float) );
+	status = cudaMalloc( reinterpret_cast<void **>(&dycs), NUMTRIALS*sizeof(float) );
 		checkCudaErrors( status );
-	status = cudaMalloc( reinterpret_cast<void **>(&drs), SIZE*sizeof(float) );
+	status = cudaMalloc( reinterpret_cast<void **>(&drs), NUMTRIALS*sizeof(float) );
 		checkCudaErrors( status );
     status = cudaMalloc( reinterpret_cast<void **>(&dnumHits), sizeof(int) );
 		checkCudaErrors( status );
@@ -154,17 +154,17 @@ main( int argc, char* argv[ ] )
 //	status = cudaMemcpy( dB, hB, SIZE*sizeof(float), cudaMemcpyHostToDevice );
 //		checkCudaErrors( status );
 
-	status = cudaMemcpy( dxcs, hxcs, SIZE*sizeof(float), cudaMemcpyHostToDevice );
+	status = cudaMemcpy( dxcs, hxcs, NUMTRIALS*sizeof(float), cudaMemcpyHostToDevice );
 		checkCudaErrors( status );
-	status = cudaMemcpy( dycs, hycs, SIZE*sizeof(float), cudaMemcpyHostToDevice );
+	status = cudaMemcpy( dycs, hycs, NUMTRIALS*sizeof(float), cudaMemcpyHostToDevice );
 		checkCudaErrors( status );
-    status = cudaMemcpy( drs, hrs, SIZE*sizeof(float), cudaMemcpyHostToDevice );
+    status = cudaMemcpy( drs, hrs, NUMTRIALS*sizeof(float), cudaMemcpyHostToDevice );
 		checkCudaErrors( status );
 
 	// setup the execution parameters:
 
 	dim3 threads(BLOCKSIZE, 1, 1 );
-	dim3 grid( SIZE / threads.x, 1, 1 );
+	dim3 grid( NUMTRIALS / threads.x, 1, 1 );
 
 	// Create and start timer
 
@@ -205,16 +205,16 @@ main( int argc, char* argv[ ] )
 	// compute and print the performance
 
 	double secondsTotal = 0.001 * (double)msecTotal;
-	double multsPerSecond = (float)SIZE / secondsTotal;
-	double megaMultsPerSecond = multsPerSecond / 1000000.;
-	fprintf( stderr, "Size = %10d, MegaMults/Second = %10.2lf\n", SIZE, megaMultsPerSecond );
+	double trialsPerSecond = (float)NUMTRIALS / secondsTotal;
+	double megaTrialsPerSecond = trialsPerSecond / 1000000.;
+	fprintf( stderr, "Size = %10d, MegaTrials/Second = %10.2lf\n", NUMTRIALS, megaTrialsPerSecond );
 
 	// copy result from the device to the host:
 
 	status = cudaMemcpy( hnumHits, dnumHits, sizeof(int), cudaMemcpyDeviceToHost );
 		checkCudaErrors( status );
 
-	fprintf( stderr, "\n%8.4lf\n", (float)hnumHits[0]/(float)SIZE );
+	fprintf( stderr, "\n%8.4lf\n", (float)hnumHits[0]/(float)NUMTRIALS );
     
 	// clean up memory:
 //	delete [ ] hA;
