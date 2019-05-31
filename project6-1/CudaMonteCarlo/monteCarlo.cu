@@ -48,6 +48,29 @@ __global__  void MonteCarlo( float *xcs, float *ycs, float *rs, int *numHits )
 	int gid = blockIdx.x*blockDim.x + threadIdx.x;
 	//C[gid] = A[gid] * B[gid];
     numHits[0] = 10000;
+    
+    __shared__ float prods[BLOCKSIZE];
+
+	unsigned int numItems = blockDim.x;
+	unsigned int tnum = threadIdx.x;
+	unsigned int wgNum = blockIdx.x;
+	unsigned int gid = blockIdx.x*blockDim.x + threadIdx.x;
+
+	prods[tnum] = 1;
+
+	for (int offset = 1; offset < numItems; offset *= 2)
+	{
+		int mask = 2 * offset - 1;
+		__syncthreads();
+		if ((tnum & mask) == 0)
+		{
+			prods[tnum] += prods[tnum + offset];
+		}
+	}
+
+	__syncthreads();
+	if (tnum == 0)
+		numHits[0] = prods[0];
 }
 
 // helper functions
@@ -214,7 +237,8 @@ main( int argc, char* argv[ ] )
 	status = cudaMemcpy( hnumHits, dnumHits, sizeof(int), cudaMemcpyDeviceToHost );
 		checkCudaErrors( status );
 
-	fprintf( stderr, "\n%8.4lf\n", (float)hnumHits[0]/(float)NUMTRIALS );
+    float prob = (float)(hnumHits[0]) / (float)(NUMTRIALS);
+	fprintf( stderr, "\nProbability=%8.4lf\n", prob );
     
 	// clean up memory:
 //	delete [ ] hA;
