@@ -49,14 +49,78 @@ __global__  void MonteCarlo( float *xcs, float *ycs, float *rs, int *numHits )
 	//C[gid] = A[gid] * B[gid];
     //numHits[0] = 10000;
         
-    __shared__ float prods[BLOCKSIZE];
+    __shared__ int prods[BLOCKSIZE];
 
 	unsigned int numItems = blockDim.x;
 	unsigned int tnum = threadIdx.x;
 	unsigned int wgNum = blockIdx.x;
 	unsigned int gid = blockIdx.x*blockDim.x + threadIdx.x;
 
-	prods[tnum] = 1;
+    float xc = xcs[gid];
+    float yc = ycs[gid];
+    float  r =  rs[gid];
+
+    // solve for the intersection using the quadratic formula:
+    float a = 2.;
+    float b = -2.*( xc + yc );
+    float c = xc*xc + yc*yc - r*r;
+    float d = b*b - 4.*a*c;
+
+    if( d < 0. )
+    {
+        prods[tnum] = 0;
+    }
+    else
+    {
+            // hits the circle:
+        // get the first intersection:
+        d = sqrt( d );
+        float t1 = (-b + d ) / ( 2.*a );	// time to intersect the circle
+        float t2 = (-b - d ) / ( 2.*a );	// time to intersect the circle
+        float tmin = t1 < t2 ? t1 : t2;		// only care about the first intersection
+
+        if( tmin < 0. )
+        {
+            prods[tnum] = 0;
+        }
+        else
+        {
+            // where does it intersect the circle?
+            float xcir = tmin;
+            float ycir = tmin;
+
+            // get the unitized normal vector at the point of intersection:
+            float nx = xcir - xc;
+            float ny = ycir - yc;
+            float n = sqrt( nx*nx + ny*ny );
+            nx /= n;	// unit vector
+            ny /= n;	// unit vector
+
+            // get the unitized incoming vector:
+            float inx = xcir - 0.;
+            float iny = ycir - 0.;
+            float in = sqrt( inx*inx + iny*iny );
+            inx /= in;	// unit vector
+            iny /= in;	// unit vector
+
+            // get the outgoing (bounced) vector:
+            float dot = inx*nx + iny*ny;
+            float outx = inx - 2.*nx*dot;	// angle of reflection = angle of incidence`
+            float outy = iny - 2.*ny*dot;	// angle of reflection = angle of incidence`
+
+            // find out if it hits the infinite plate:
+            float t = ( 0. - ycir ) / outy;
+
+            if( t < 0. )
+            {
+                prods[tnum] = 0;
+            }
+            else
+            {
+                prods[tnum] = 1;
+            }
+        }
+    }
 
 	for (int offset = 1; offset < numItems; offset *= 2)
 	{
