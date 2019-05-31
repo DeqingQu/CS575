@@ -46,7 +46,7 @@ __global__  void ArrayMul( float *A, float *B, float *C )
 __global__  void MonteCarlo( float *xcs, float *ycs, float *rs, int *numHits )
 {
 	int gid = blockIdx.x*blockDim.x + threadIdx.x;
-	C[gid] = A[gid] * B[gid];
+	//C[gid] = A[gid] * B[gid];
     numHits[0] = 10000;
 }
 
@@ -101,7 +101,7 @@ main( int argc, char* argv[ ] )
     
 
     // fill the random-value arrays:
-    for( int n = 0; n < NUMTRIALS; n++ )
+    for( int n = 0; n < SIZE; n++ )
     {
         hxcs[n] = Ranf( XCMIN, XCMAX );
         hycs[n] = Ranf( YCMIN, YCMAX );
@@ -214,7 +214,7 @@ main( int argc, char* argv[ ] )
 	status = cudaMemcpy( hnumHits, dnumHits, sizeof(int), cudaMemcpyDeviceToHost );
 		checkCudaErrors( status );
 
-	fprintf( stderr, "\n%8.4lf\n", (float)numHits[0]/(float)SIZE );
+	fprintf( stderr, "\n%8.4lf\n", (float)hnumHits[0]/(float)SIZE );
     
 	// clean up memory:
 //	delete [ ] hA;
@@ -234,7 +234,7 @@ main( int argc, char* argv[ ] )
 
     status = cudaFree( dxcs );
 		checkCudaErrors( status );
-	status = cudaFree( dxys );
+	status = cudaFree( dycs );
 		checkCudaErrors( status );
 	status = cudaFree( drs );
 		checkCudaErrors( status );
